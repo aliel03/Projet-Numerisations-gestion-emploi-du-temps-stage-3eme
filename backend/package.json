@@ -9,11 +9,15 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@vue/shared": "^3.5.30",
     "bcrypt": "^5.1.0",
     "cors": "^2.8.5",
+    "express": "^5.2.1",
     "helmet": "^7.0.0",
+    "jsonwebtoken": "^9.0.3",
     "mysql": "^2.18.1",
     "mysql2": "^3.3.4",
+    "nodemailer": "^8.0.2",
     "sequelize": "^6.32.0"
   }
 }

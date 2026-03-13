@@ -1,10 +1,11 @@
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import axiosInstance from "../../config/axiosConfig";
-import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
 import ProfesseurFichier from "../../components/Professeurs/ProfesseurFichier";
 
 function ProfForm() {
   const userRole = localStorage.getItem("userRole");
+  const navigate = useNavigate();
 
   const [nom, setNom] = useState("");
   const [prenom, setPrenom] = useState("");
@@ -12,12 +13,20 @@ function ProfForm() {
   const [numero_tel, setNum] = useState("");
   const [metier, setMetier] = useState("");
   const [etablissement, setEtablissement] = useState("");
-  const [role, setRole] = useState("");
+  const [role, setRole] = useState("Tuteur");
   const [nb_eleve_tuteur, setNombre] = useState(0);
   const [password, setPassword] = useState("");
 
+  const [errorMessage, setErrorMessage] = useState("");
+  const [successMessage, setSuccessMessage] = useState("");
+
+  const isRoleWithActivity =
+    role === "Encadrant" || role === "Encadrant et Tuteur";
+
   const handleSubmit = (e) => {
     e.preventDefault();
+    setErrorMessage("");
+    setSuccessMessage("");
 
     const data = {
       nom,
@@ -27,23 +36,45 @@ function ProfForm() {
       metier,
       etablissement,
       role,
-      nb_eleve_tuteur,
-      password
+      nb_eleve_tuteur: Number(nb_eleve_tuteur),
+      password,
     };
+
+    console.log("DATA PROF ENVOYEE =", data);
 
     axiosInstance
       .post("/professeurs", data)
       .then((response) => {
-        const profId = response.data.id;
+        const createdProf = response.data;
+        const createdProfId = createdProf?.id;
+
+        if (isRoleWithActivity && createdProfId) {
+          navigate("/activiteForm", {
+            state: { professeurId: createdProfId },
+          });
+          return;
+        }
+
+        setSuccessMessage("Inscription enregistrée avec succès.");
       })
       .catch((error) => {
-        console.error(error);
+        console.error("Erreur lors de la création du professeur :", error);
+
+        const backendMessage =
+          error?.response?.data?.message ||
+          "Impossible d'enregistrer ce professeur.";
+
+        setErrorMessage(backendMessage);
       });
   };
 
   return (
     <div>
       <h3>Formulaire accueillant</h3>
+
+      {errorMessage && <p style={{ color: "red" }}>{errorMessage}</p>}
+      {successMessage && <p style={{ color: "green" }}>{successMessage}</p>}
+
       <form onSubmit={handleSubmit}>
         <div className="label-form">
           <label>Nom</label>
@@ -55,16 +86,18 @@ function ProfForm() {
             required
           />
         </div>
+
         <div className="label-form">
-          <label>Prenom</label>
+          <label>Prénom</label>
           <input
             type="text"
             value={prenom}
             onChange={(e) => setPrenom(e.target.value)}
-            placeholder="Prenom"
+            placeholder="Prénom"
             required
           />
         </div>
+
         <div className="label-form">
           <label>Email</label>
           <input
@@ -75,6 +108,7 @@ function ProfForm() {
             required
           />
         </div>
+
         <div className="label-form">
           <label>Mot de passe</label>
           <input
@@ -85,6 +119,7 @@ function ProfForm() {
             required
           />
         </div>
+
         <div className="label-form">
           <label>Numéro de téléphone</label>
           <input
@@ -95,6 +130,7 @@ function ProfForm() {
             required
           />
         </div>
+
         <div className="label-form">
           <label>Métier</label>
           <input
@@ -105,6 +141,7 @@ function ProfForm() {
             required
           />
         </div>
+
         <div className="label-form">
           <label>Établissement/labo/...</label>
           <input
@@ -115,6 +152,7 @@ function ProfForm() {
             required
           />
         </div>
+
         <div className="label-form">
           <label>Je souhaite être...</label>
           <select
@@ -125,10 +163,7 @@ function ProfForm() {
             <option value="Encadrant">Encadrant d'une activité</option>
             <option value="Tuteur">Tuteur d'un élève</option>
             <option value="Encadrant et Tuteur">Tuteur et encadrant</option>
-            {userRole && userRole === "Admin" && (
-              <option value="Admin">Admin</option>
-            )}{" "}
-            {/* uniquement l'admin peut créer de nouveaux admin*/}
+            {userRole === "Admin" && <option value="Admin">Admin</option>}
           </select>
         </div>
 
@@ -136,9 +171,10 @@ function ProfForm() {
           role === "Encadrant et Tuteur" ||
           role === "Admin") && (
           <div className="label-form">
-            <label>Je souhaite être tuteur de combien d'élève ?</label>
+            <label>Je souhaite être tuteur de combien d'élèves ?</label>
             <input
               type="number"
+              min="0"
               value={nb_eleve_tuteur}
               onChange={(e) => setNombre(e.target.value)}
               required
@@ -146,17 +182,14 @@ function ProfForm() {
           </div>
         )}
 
-        {role === "Tuteur" ? (
-          <button className="btn">Valider</button>
-        ) : (
-          <button className="btn">
-            <Link className="link" to="/activiteForm">
-              Ajouter une activité
-            </Link>
-          </button>
-        )}
+        <button className="btn" type="submit">
+          {isRoleWithActivity
+            ? "Continuer vers la création d'activité"
+            : "Valider"}
+        </button>
       </form>
-      {userRole && userRole === "Admin" && <ProfesseurFichier />}
+
+      {userRole === "Admin" && <ProfesseurFichier />}
     </div>
   );
 }
