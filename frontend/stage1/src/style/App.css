@@ -212,15 +212,11 @@ select:focus {
 form {
   box-shadow: 0 0 .4vw #6c584c, 0 0 0 .15vw transparent;
   border-radius: 30px;
-  margin: 10px;
-  margin-top: 40px;
-  margin-left: 10%;
-  margin-right: 10%;
-  padding: 10px;
-  min-width: 80%;
-  width: auto;
+  margin: 40px auto 10px auto;
+  padding: 20px;
+  width: 80%;
+  max-width: 900px;
   height: auto;
-  max-width: 575px;
 }
 
 .label-form {

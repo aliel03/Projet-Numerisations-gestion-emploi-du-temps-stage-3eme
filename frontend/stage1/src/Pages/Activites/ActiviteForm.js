@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import axiosInstance from "../../config/axiosConfig";
 import ActiviteFichier from "../../components/Activites/ActiviteFichier";
+import "../../style/Activites/Activites.css";
 
 function ActiviteForm(props) {
   const userRole = localStorage.getItem("userRole");
@@ -59,6 +60,48 @@ function ActiviteForm(props) {
   }, [encadrants, professeurId]);
 
   const showEncadrantSelect = !injectedProfesseurId;
+
+  const disponibilites = [
+    {
+      jour: "Lundi",
+      matin: l1,
+      setMatin: setL1,
+      apresMidi: l2,
+      setApresMidi: setL2,
+    },
+    {
+      jour: "Mardi",
+      matin: ma1,
+      setMatin: setMa1,
+      apresMidi: ma2,
+      setApresMidi: setMa2,
+    },
+    {
+      jour: "Mercredi",
+      matin: me1,
+      setMatin: setMe1,
+      apresMidi: me2,
+      setApresMidi: setMe2,
+    },
+    {
+      jour: "Jeudi",
+      matin: j1,
+      setMatin: setJ1,
+      apresMidi: j2,
+      setApresMidi: setJ2,
+    },
+    {
+      jour: "Vendredi",
+      matin: v1,
+      setMatin: setV1,
+      apresMidi: v2,
+      setApresMidi: setV2,
+    },
+  ];
+
+  const toggleDisponibilite = (setter, currentValue) => {
+    setter(currentValue === 1 ? 0 : 1);
+  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -130,13 +173,13 @@ function ActiviteForm(props) {
   };
 
   return (
-    <div>
+    <div className="activite-form-page">
       <h2>Formulaire d'activité</h2>
 
       {errorMessage && <p style={{ color: "red" }}>{errorMessage}</p>}
       {successMessage && <p style={{ color: "green" }}>{successMessage}</p>}
 
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={handleSubmit} className="activite-form">
         <div className="label-form">
           <label>Nom de l'activité</label>
           <input
@@ -176,89 +219,65 @@ function ActiviteForm(props) {
           />
         </div>
 
-        <h3>
-          Je suis disponible pour faire cette activité se déroulant la semaine du{" "}
-          {semaine}
-        </h3>
+        <div className="activite-dispo-block">
+          <h3 className="activite-dispo-title">
+            Mes disponibilités pour la semaine du {semaine}
+          </h3>
+          <p className="activite-dispo-subtitle">
+            Cliquez sur les carrés pour indiquer vos créneaux disponibles.
+          </p>
 
-        <div className="label-form">
-          <label>Lundi matin :</label>
-          <select value={l1} onChange={(e) => setL1(e.target.value)}>
-            <option value={0}>Non</option>
-            <option value={1}>Oui</option>
-          </select>
-        </div>
+          <div className="activite-dispo-table-container">
+            <table className="activite-dispo-table">
+              <thead>
+                <tr>
+                  <th>Jour</th>
+                  <th>Matin</th>
+                  <th>Après-midi</th>
+                </tr>
+              </thead>
+              <tbody>
+                {disponibilites.map((item) => (
+                  <tr key={item.jour}>
+                    <td className="activite-dispo-jour">{item.jour}</td>
 
-        <div className="label-form">
-          <label>Lundi après-midi :</label>
-          <select value={l2} onChange={(e) => setL2(e.target.value)}>
-            <option value={0}>Non</option>
-            <option value={1}>Oui</option>
-          </select>
-        </div>
+                    <td className="activite-dispo-cell">
+                      <button
+                        type="button"
+                        className={`activite-dispo-square ${
+                          item.matin === 1 ? "is-active" : ""
+                        }`}
+                        onClick={() =>
+                          toggleDisponibilite(item.setMatin, item.matin)
+                        }
+                        aria-label={`${item.jour} matin`}
+                      >
+                        {item.matin === 1 ? "✓" : ""}
+                      </button>
+                    </td>
 
-        <div className="label-form">
-          <label>Mardi matin :</label>
-          <select value={ma1} onChange={(e) => setMa1(e.target.value)}>
-            <option value={0}>Non</option>
-            <option value={1}>Oui</option>
-          </select>
-        </div>
-
-        <div className="label-form">
-          <label>Mardi après-midi :</label>
-          <select value={ma2} onChange={(e) => setMa2(e.target.value)}>
-            <option value={0}>Non</option>
-            <option value={1}>Oui</option>
-          </select>
-        </div>
-
-        <div className="label-form">
-          <label>Mercredi matin :</label>
-          <select value={me1} onChange={(e) => setMe1(e.target.value)}>
-            <option value={0}>Non</option>
-            <option value={1}>Oui</option>
-          </select>
-        </div>
-
-        <div className="label-form">
-          <label>Mercredi après-midi :</label>
-          <select value={me2} onChange={(e) => setMe2(e.target.value)}>
-            <option value={0}>Non</option>
-            <option value={1}>Oui</option>
-          </select>
-        </div>
-
-        <div className="label-form">
-          <label>Jeudi matin :</label>
-          <select value={j1} onChange={(e) => setJ1(e.target.value)}>
-            <option value={0}>Non</option>
-            <option value={1}>Oui</option>
-          </select>
-        </div>
-
-        <div className="label-form">
-          <label>Jeudi après-midi :</label>
-          <select value={j2} onChange={(e) => setJ2(e.target.value)}>
-            <option value={0}>Non</option>
-            <option value={1}>Oui</option>
-          </select>
-        </div>
-
-        <div className="label-form">
-          <label>Vendredi matin :</label>
-          <select value={v1} onChange={(e) => setV1(e.target.value)}>
-            <option value={0}>Non</option>
-            <option value={1}>Oui</option>
-          </select>
-        </div>
-
-        <div className="label-form">
-          <label>Vendredi après-midi :</label>
-          <select value={v2} onChange={(e) => setV2(e.target.value)}>
-            <option value={0}>Non</option>
-            <option value={1}>Oui</option>
-          </select>
+                    <td className="activite-dispo-cell">
+                      <button
+                        type="button"
+                        className={`activite-dispo-square ${
+                          item.apresMidi === 1 ? "is-active" : ""
+                        }`}
+                        onClick={() =>
+                          toggleDisponibilite(
+                            item.setApresMidi,
+                            item.apresMidi
+                          )
+                        }
+                        aria-label={`${item.jour} après-midi`}
+                      >
+                        {item.apresMidi === 1 ? "✓" : ""}
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
 
         <div className="label-form">
