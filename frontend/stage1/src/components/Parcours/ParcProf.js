@@ -4,6 +4,10 @@ import ActiviteDescr from "../Activites/ActiviteDescr";
 import ParcProfPdf from "./ParcProfPdf";
 import { PDFDownloadLink } from "@react-pdf/renderer";
 import { MomentsContext } from "../../utils/tabMoments";
+import {
+  buildParcoursLabelMap,
+  getParcoursDisplayName,
+} from "../../utils/parcoursLabels";
 
 function ParcProf(props) {
   const id = props.profId;
@@ -12,6 +16,7 @@ function ParcProf(props) {
   const { tab_moments } = useContext(MomentsContext);
 
   const [etat, setEtat] = useState(false);
+  const [parcoursLabelMap, setParcoursLabelMap] = useState({});
 
   const handleAfficherParc = () => {
     setEtat(!etat);
@@ -20,10 +25,31 @@ function ParcProf(props) {
   const [activites, setActivites] = useState(null);
 
   useEffect(() => {
+    const semaine = localStorage.getItem("semaineStage");
+
     axiosInstance
-      .get(`/activiteparcours/professeur/${id}`)
+      .get(`/activiteparcours/professeur/${id}`, {
+        params: semaine
+          ? {
+              weekStart: semaine,
+            }
+          : undefined,
+      })
       .then((res) => {
         setActivites(res.data);
+        const parcoursIds = [];
+
+        Object.values(res.data || {}).forEach((moments) => {
+          (moments || []).forEach((moment) => {
+            (moment || []).forEach((activite) => {
+              if (activite && activite.parcoursId) {
+                parcoursIds.push(activite.parcoursId);
+              }
+            });
+          });
+        });
+
+        setParcoursLabelMap(buildParcoursLabelMap(parcoursIds));
       })
       .catch((err) => {
         console.error(err);
@@ -54,7 +80,12 @@ function ParcProf(props) {
                           key={activiteIndex}
                           id={activite.activiteId}
                         />
-                        <h3> Parcours : {activite.parcoursId}</h3>
+                        <h3>
+                          {getParcoursDisplayName(
+                            activite.parcoursId,
+                            parcoursLabelMap
+                          )}
+                        </h3>
                       </div>
                     ))}
                 </ul>

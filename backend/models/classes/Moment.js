@@ -9,6 +9,23 @@ class Moment {
     this.activite_dispo.set(activite, dispo);
   }
 
+  reduceActiviteCapacity(activite, occupiedPlaces) {
+    const currentValue = this.activite_dispo.get(activite);
+
+    if (currentValue === undefined) {
+      return;
+    }
+
+    const nextValue = currentValue - occupiedPlaces;
+
+    if (nextValue >= this.nb_eleve_max) {
+      this.activite_dispo.set(activite, nextValue);
+      return;
+    }
+
+    this.activite_dispo.delete(activite);
+  }
+
   // permet d'attribuer une activité à un parcours
   giveActivite(parc) {
     let activitePrise = null;

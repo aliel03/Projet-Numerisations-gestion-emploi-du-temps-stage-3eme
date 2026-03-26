@@ -3,17 +3,14 @@
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    margin-top: 40px;
+    margin-top: 0;
 }
 
 .contain-auth {
-    box-shadow: 0 0 .4vw #6c584c, 0 0 0 .15vw transparent;
-    border-radius: 30px;
-    margin: 10px;
-    margin-top: 40px;
-    padding: 10px;
+    margin: 0;
+    padding: 0;
     min-width: 390px;
-    width: auto;
+    width: 100%;
     max-width: 600px;
     height: auto;
 }

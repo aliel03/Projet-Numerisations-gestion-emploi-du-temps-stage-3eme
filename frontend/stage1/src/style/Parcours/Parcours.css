@@ -33,6 +33,590 @@
     margin-top: 15px;
 }
 
+.generation-page {
+    width: 100%;
+    padding: 20px 24px 40px;
+    box-sizing: border-box;
+}
+
+.generation-header {
+    text-align: center;
+    margin-bottom: 24px;
+}
+
+.generation-subtitle {
+    max-width: 840px;
+    margin: 10px auto 0;
+    color: #6c584c;
+}
+
+.generation-layout {
+    max-width: 1240px;
+    margin: 0 auto 24px;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 22px;
+}
+
+.generation-panel {
+    border-radius: 24px;
+    background: rgba(215, 204, 198, 0.82);
+    box-shadow: 0px 12px 26px rgba(108, 88, 76, 0.1);
+    padding: 24px;
+}
+
+.generation-panel h2,
+.generation-panel h3 {
+    color: #6c584c;
+}
+
+.generation-form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 18px;
+}
+
+.generation-form-grid .label-form {
+    margin-top: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.generation-form-grid .label-form:first-child {
+    grid-column: 1 / -1;
+}
+
+.generation-form-grid label {
+    color: #6c584c;
+    font-weight: 600;
+}
+
+.generation-form-grid input {
+    border-radius: 14px;
+    border: 1px solid rgba(108, 88, 76, 0.18);
+    padding: 12px 14px;
+    background: rgba(255, 255, 255, 0.88);
+}
+
+.generation-help {
+    margin: 0;
+    color: #6c584c;
+    font-size: 14px;
+}
+
+.generation-warning-text {
+    margin-top: 6px;
+}
+
+.generation-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 18px;
+}
+
+.generation-actions .btn {
+    margin: 0;
+}
+
+.btn.btn-secondary {
+    background: rgba(255, 255, 255, 0.85);
+    color: #6c584c;
+    border-color: rgba(108, 88, 76, 0.18);
+    box-shadow: none;
+}
+
+.btn.btn-secondary:hover {
+    background: rgba(255, 255, 255, 1);
+    color: #6c584c;
+}
+
+.btn:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+.generation-summary-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
+}
+
+.generation-summary-card,
+.generation-moments-card {
+    border-radius: 18px;
+    padding: 16px 18px;
+    background: rgba(255, 255, 255, 0.7);
+    border: 1px solid rgba(108, 88, 76, 0.12);
+}
+
+.generation-summary-card strong {
+    display: block;
+    margin-top: 4px;
+    font-size: 24px;
+    color: #3d3128;
+}
+
+.generation-summary-card p {
+    margin-bottom: 0;
+    color: #6c584c;
+}
+
+.generation-summary-label {
+    display: inline-block;
+    color: #6c584c;
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+.generation-moments-card,
+.generation-alerts {
+    margin-top: 18px;
+}
+
+.generation-moments-card h3,
+.generation-alerts h3 {
+    margin-top: 0;
+}
+
+.generation-moments-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+}
+
+.generation-moment-pill {
+    border-radius: 14px;
+    background: rgba(255, 255, 255, 0.85);
+    padding: 12px 14px;
+    border: 1px solid rgba(108, 88, 76, 0.1);
+}
+
+.generation-moment-pill span,
+.generation-moment-pill strong {
+    display: block;
+}
+
+.generation-moment-pill span {
+    color: #6c584c;
+    font-size: 14px;
+}
+
+.generation-moment-pill strong {
+    margin-top: 4px;
+    color: #3d3128;
+}
+
+.generation-alert-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.generation-fixed-layout {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 20px;
+}
+
+.generation-fixed-column {
+    border-radius: 18px;
+    padding: 18px;
+    background: rgba(255, 255, 255, 0.65);
+    border: 1px solid rgba(108, 88, 76, 0.12);
+}
+
+.generation-fixed-column h3 {
+    margin-top: 0;
+}
+
+.generation-fixed-form {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.generation-fixed-form .label-form {
+    margin-top: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.generation-fixed-form select {
+    border-radius: 14px;
+    border: 1px solid rgba(108, 88, 76, 0.18);
+    padding: 12px 14px;
+    background: rgba(255, 255, 255, 0.88);
+}
+
+.generation-fixed-scope,
+.generation-fixed-checkboxes {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.generation-radio-option,
+.generation-checkbox-option {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 12px;
+    border-radius: 14px;
+    background: rgba(255, 255, 255, 0.85);
+    border: 1px solid rgba(108, 88, 76, 0.1);
+}
+
+.generation-fixed-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.generation-fixed-item {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 14px 16px;
+    border-radius: 16px;
+    background: rgba(255, 255, 255, 0.85);
+    border: 1px solid rgba(108, 88, 76, 0.12);
+}
+
+.generation-fixed-item p {
+    margin: 6px 0 0;
+    color: #6c584c;
+}
+
+.generation-fixed-item .btn {
+    margin: 0;
+}
+
+.generation-feedback {
+    margin: 0;
+    padding: 12px 14px;
+    border-radius: 14px;
+    border: 1px solid transparent;
+}
+
+.generation-feedback.is-error {
+    background: rgba(176, 0, 32, 0.08);
+    border-color: rgba(176, 0, 32, 0.18);
+    color: #8a1c1c;
+}
+
+.generation-feedback.is-warning {
+    background: rgba(176, 137, 104, 0.12);
+    border-color: rgba(176, 137, 104, 0.18);
+    color: #6c584c;
+}
+
+.generation-feedback.is-info {
+    background: rgba(0, 124, 128, 0.08);
+    border-color: rgba(0, 124, 128, 0.18);
+    color: #0f5d61;
+}
+
+.generation-feedback.is-success {
+    background: rgba(106, 153, 78, 0.1);
+    border-color: rgba(106, 153, 78, 0.2);
+    color: #3f6b22;
+}
+
+.generation-rules-list {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+}
+
+.generation-rule-item {
+    margin: 0;
+    padding: 14px 16px;
+    border-radius: 16px;
+    background: rgba(255, 255, 255, 0.7);
+    border: 1px solid rgba(108, 88, 76, 0.12);
+    color: #3d3128;
+}
+
 i {
    z-index: -100; 
+}
+
+.parcours-page {
+    width: 100%;
+    padding: 20px 24px 40px;
+    box-sizing: border-box;
+}
+
+.parcours-header {
+    text-align: center;
+    margin-bottom: 24px;
+}
+
+.parcours-subtitle {
+    max-width: 760px;
+    margin: 10px auto 0;
+    color: #6c584c;
+}
+
+.parcours-view-switch {
+    display: flex;
+    justify-content: center;
+    gap: 14px;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+}
+
+.planning-week-status-card {
+    max-width: 920px;
+    margin: 0 auto 24px;
+    padding: 20px 22px;
+    border-radius: 24px;
+    background: rgba(215, 204, 198, 0.82);
+    box-shadow: 0px 12px 26px rgba(108, 88, 76, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 18px;
+    flex-wrap: wrap;
+}
+
+.planning-week-status-card h2 {
+    margin: 0;
+    color: #6c584c;
+}
+
+.planning-week-status-tag {
+    display: inline-flex;
+    margin: 0 0 8px;
+    padding: 6px 12px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.75);
+    color: #6c584c;
+    font-weight: 700;
+    font-size: 13px;
+}
+
+.planning-week-status-text {
+    margin: 8px 0 0;
+    color: #6c584c;
+}
+
+.planning-week-status-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.planning-week-status-actions .btn {
+    margin: 0;
+}
+
+.parcours-week-picker {
+    max-width: 780px;
+    margin: 0 auto 24px;
+    padding: 18px 20px;
+    border-radius: 20px;
+    background: rgba(255, 255, 255, 0.55);
+    border: 1px solid rgba(108, 88, 76, 0.14);
+    box-shadow: 0 10px 22px rgba(108, 88, 76, 0.08);
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+}
+
+.parcours-week-picker label {
+    margin: 0;
+    color: #6c584c;
+}
+
+.parcours-week-picker input {
+    max-width: 220px;
+}
+
+.parcours-week-help {
+    width: 100%;
+    margin: 0;
+    text-align: center;
+    color: #6c584c;
+    font-size: 14px;
+}
+
+.parcours-view-switch .btn.is-active {
+    background: #b08968;
+    color: #ffffff;
+}
+
+.parcours-selection-zone {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+}
+
+.parcours-selection-zone select {
+    border-radius: 12px;
+    border: 1px solid rgba(108, 88, 76, 0.2);
+    padding: 10px 14px;
+    background: rgba(255, 255, 255, 0.85);
+}
+
+.parcours-content-zone {
+    max-width: 1300px;
+    margin: 0 auto;
+}
+
+.parcours-placeholder-zone,
+.planning-global-section {
+    border-radius: 24px;
+    background: rgba(215, 204, 198, 0.8);
+    box-shadow: 0px 12px 26px rgba(108, 88, 76, 0.1);
+    padding: 24px;
+}
+
+.planning-global-subtitle {
+    margin-top: 0;
+    margin-bottom: 20px;
+    color: #6c584c;
+}
+
+.planning-global-table-container {
+    width: 100%;
+    overflow-x: auto;
+}
+
+.planning-global-table {
+    width: 100%;
+    min-width: 900px;
+    border-collapse: separate;
+    border-spacing: 0;
+    background: rgba(255, 255, 255, 0.42);
+    border-radius: 22px;
+    overflow: hidden;
+    box-shadow: 0px 12px 26px rgba(108, 88, 76, 0.08);
+}
+
+.planning-global-table th {
+    background: rgba(201, 173, 166, 0.35);
+    color: #6c584c;
+    font-size: 18px;
+    font-weight: 600;
+    padding: 18px 20px;
+    text-align: center;
+}
+
+.planning-global-table td {
+    border-top: 1px solid rgba(108, 88, 76, 0.1);
+    padding: 16px;
+    vertical-align: top;
+}
+
+.planning-global-row-label {
+    min-width: 140px;
+    font-weight: 600;
+    color: #6c584c;
+    background: rgba(255, 255, 255, 0.3);
+}
+
+.planning-global-cell {
+    min-width: 180px;
+}
+
+.planning-global-cell-content {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    min-height: 90px;
+}
+
+.planning-card {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding: 12px 14px;
+    border-radius: 16px;
+    background: rgba(255, 255, 255, 0.92);
+    border: 1px solid rgba(201, 173, 166, 0.45);
+    box-shadow: 0 8px 18px rgba(108, 88, 76, 0.08);
+    text-decoration: none;
+    color: #3d3128;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.planning-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 22px rgba(108, 88, 76, 0.12);
+}
+
+.planning-card-title {
+    font-size: 16px;
+    font-weight: 700;
+}
+
+.planning-card-badge {
+    align-self: flex-start;
+    padding: 4px 10px;
+    border-radius: 999px;
+    background: rgba(201, 173, 166, 0.28);
+    color: #6c584c;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.planning-card-prof {
+    font-size: 14px;
+    color: #6c584c;
+}
+
+.planning-empty-cell {
+    font-size: 14px;
+    color: rgba(108, 88, 76, 0.7);
+}
+
+@media screen and (max-width: 768px) {
+    .generation-page,
+    .parcours-page {
+        padding: 16px 12px 32px;
+    }
+
+    .generation-layout,
+    .generation-form-grid,
+    .generation-summary-grid,
+    .generation-moments-grid,
+    .generation-rules-list,
+    .generation-fixed-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .generation-panel {
+        padding: 18px;
+    }
+
+    .parcours-week-picker {
+        padding: 16px;
+    }
+
+    .planning-week-status-card {
+        padding: 18px;
+    }
+
+    .parcours-placeholder-zone,
+    .planning-global-section {
+        padding: 18px;
+    }
+
+    .planning-global-table th,
+    .planning-global-table td {
+        padding: 12px 10px;
+    }
 }

@@ -25,7 +25,8 @@ exports.getElevesByActMoment = async (req, res) => {
   try {
     const eleves = await EleveService.getElevesByActMoment(
       activiteId,
-      indexMoment
+      indexMoment,
+      req.query.weekStart
     );
     res.json(eleves);
   } catch (err) {
@@ -113,9 +114,13 @@ exports.sendPassword = async (req, res) => {
 //permet d'assigner un parcours à un élève
 exports.asignParcours = async (req, res) => {
   const eleveId = req.params.id;
-  const { nbEleveMax } = req.body;
+  const { nbEleveMax, weekStart } = req.body;
   try {
-    const eleve = await EleveService.assignParcours(eleveId, nbEleveMax);
+    const eleve = await EleveService.assignParcours(
+      eleveId,
+      nbEleveMax,
+      weekStart
+    );
     res.status(201).json(eleve);
   } catch (error) {
     res

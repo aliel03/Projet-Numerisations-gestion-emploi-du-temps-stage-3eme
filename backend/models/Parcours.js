@@ -7,6 +7,14 @@ const Parcours = db.define("Parcours", {
     primaryKey: true,
     autoIncrement: true,
   },
+  planningWeekId: {
+    type: DataTypes.INTEGER,
+    allowNull: true,
+    references: {
+      model: "PlanningWeeks",
+      key: "id",
+    },
+  },
 });
 
 module.exports = Parcours;

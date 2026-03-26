@@ -1,5 +1,6 @@
 .App {
   text-align: center;
+  color: var(--color-text);
 }
 
 .App-logo {
@@ -25,7 +26,7 @@
 }
 
 .App-link {
-  color: #cfbba5;
+  color: var(--color-secondary);
 }
 
 @keyframes App-logo-spin {
@@ -57,7 +58,7 @@ li button {
   margin-left: 20px;
   background: transparent;
   border: none;
-  border: #6c584c 1px solid;
+  border: 1px solid var(--color-border);
 }
 
 .container {
@@ -72,22 +73,22 @@ li button {
 }
 
 .element {
-  background: rgb(255, 255, 255, 0.4);
+  background: var(--color-surface);
   max-width: 400px;
   max-height: 150px;
   min-width: 300px;
   min-height: 150px;
   margin: 20px;
   border-radius: 15px;
-  border: 2px solid #6c584c;
-  box-shadow: 2px 2px 2px 2px rgb(108, 88, 76, 0.4);
+  border: 1px solid var(--color-border);
+  box-shadow: 0 16px 32px var(--color-shadow);
   cursor: pointer;
 }
 
 .element:hover {
-  transform: translateY(-20px);
+  transform: translateY(-12px);
   transition: 0.4s;
-  box-shadow: 12px 12px 2px 1px rgb(108, 88, 76, 0.4);
+  box-shadow: 0 20px 38px rgba(83, 38, 85, 0.18);
 }
 
 @media (min-width: 40rem) {
@@ -103,76 +104,79 @@ li button {
 }
 
 input {
-  font-weight: 500px;
+  font-weight: 500;
   font-size: 15px;
-  color: #6c584c ;
+  color: var(--color-text);
   width: 100%;
   height: 100%;
   max-width: 300px;
-  background-color: transparent;
-  box-shadow: 0 0 .4vw #6c584c, 0 0 0 .15vw transparent;
+  background-color: var(--color-surface-strong);
+  box-shadow: 0 8px 18px rgba(83, 38, 85, 0.08);
   border-radius: 15px ;
-  border: #c9ada7 2px;
+  border: 1px solid var(--color-border);
   outline: none;
-  padding: 0.4vw;
-  transition: .4s;
+  padding: 10px 14px;
+  transition: .3s;
   margin: 5px;
 }
 
 input:hover {
-  box-shadow: 0 0 0 .15vw #6c584c;
+  border-color: rgba(83, 38, 85, 0.35);
 }
 
 input:focus {
-  box-shadow: 0 0 0 .15vw #c9ada7;
+  border-color: var(--color-secondary);
+  box-shadow: 0 0 0 3px rgba(0, 124, 128, 0.12);
 }
 
 textarea {
-  font-weight: 500px;
+  font-weight: 500;
   font-size: 15px;
-  color: #6c584c ;
+  color: var(--color-text);
   min-height: 60px;
   min-width: 250px;
   resize: none;
-  background-color: transparent;
-  box-shadow: 2px 2px 2px 2px rgb(108, 88, 76, 0.5);
+  background-color: var(--color-surface-strong);
+  box-shadow: 0 8px 18px rgba(83, 38, 85, 0.08);
   border-radius: 15px ;
-  border: rgb(108, 88, 76, 0.5) 1px solid;
+  border: 1px solid var(--color-border);
   outline: none;
-  padding: 0.4vw;
-  transition: .4s;
+  padding: 12px 14px;
+  transition: .3s;
   margin: 5px;
 }
 
 textarea:hover {
-  box-shadow: 0 0 0 .15vw #6c584c;
+  border-color: rgba(83, 38, 85, 0.35);
 }
 
 textarea:focus {
-  box-shadow: 0 0 0 .15vw #c9ada7;
+  border-color: var(--color-secondary);
+  box-shadow: 0 0 0 3px rgba(0, 124, 128, 0.12);
 }
 
 
 select {
-  font-weight: 500px;
+  font-weight: 500;
   font-size: 15px;
-  color: #6c584c ;
-  background-color: transparent;
-  box-shadow: 0 0 .4vw #6c584c, 0 0 0 .15vw transparent;
+  color: var(--color-text);
+  background-color: var(--color-surface-strong);
+  box-shadow: 0 8px 18px rgba(83, 38, 85, 0.08);
   border-radius: 15px ;
-  border: #c9ada7 2px;
+  border: 1px solid var(--color-border);
   outline: none;
-  padding: 0.4vw;
-  transition: .4s;
+  padding: 10px 14px;
+  transition: .3s;
   margin: 10px;
 }
 
 select:hover {
-  box-shadow: 0 0 0 .15vw #6c584c;
+  border-color: rgba(83, 38, 85, 0.35);
 }
 
 select:focus {
-  box-shadow: 0 0 0 .15vw #c9ada7;
+  border-color: var(--color-secondary);
+  box-shadow: 0 0 0 3px rgba(0, 124, 128, 0.12);
 }
 
 .container-form {
@@ -182,8 +186,13 @@ select:focus {
 
 .link {
   text-decoration: none;
-  color: #6c584c;
+  color: var(--color-primary);
   margin-top: 10px;
+  transition: color 0.2s ease;
+}
+
+.link:hover {
+  color: var(--color-secondary);
 }
 
 .link i {
@@ -194,29 +203,33 @@ select:focus {
 
 .pdf {
   display: block;
-  box-shadow: 0 0 .4vw #6c584c, 0 0 0 .15vw transparent;
+  box-shadow: 0 8px 18px rgba(83, 38, 85, 0.08);
   border-radius: 30px;
   padding: 7px;
-  color:#6c584c; 
+  color: var(--color-primary); 
   margin: 20px;
   height: auto;
   width: auto;
+  border: 1px solid var(--color-border);
+  background: rgba(255, 255, 255, 0.5);
 }
 
 .pdf:hover {
-  color:#6c584c;
-  background-color: rgb(201, 173, 166, 0.4);
+  color: var(--color-primary);
+  background-color: var(--color-accent-soft);
   transition: 0.3s;
 }
 
 form {
-  box-shadow: 0 0 .4vw #6c584c, 0 0 0 .15vw transparent;
+  box-shadow: 0 16px 34px rgba(83, 38, 85, 0.08);
   border-radius: 30px;
   margin: 40px auto 10px auto;
   padding: 20px;
   width: 80%;
   max-width: 900px;
   height: auto;
+  background: rgba(255, 250, 247, 0.72);
+  border: 1px solid var(--color-border);
 }
 
 .label-form {

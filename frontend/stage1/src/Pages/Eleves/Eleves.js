@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { PDFDownloadLink } from '@react-pdf/renderer';
 import ElevesPdf from "../../components/Eleves/ElevesPdf";
 import axiosInstance from "../../config/axiosConfig";
+import "../../style/InternalPages.css";
 
 function Eleves() {
   const userRole = localStorage.getItem("userRole");
@@ -56,32 +57,48 @@ function Eleves() {
   };
 
   return (
-    <div>
-      <h2>Liste des élèves</h2>
-      <div className="container">
-        {eleves &&
-          eleves.map((eleve) => (
-            <div
-              className="element"
-              key={eleve.id}
-              onClick={() => handleClick(eleve.id)}
-            >
-              <h3>
-                {eleve.nom} {eleve.prenom}
-              </h3>
-              <p>Identifiant : {eleve.id}</p>
-            </div>
-          ))}
-      </div>
-      <button className="btn">
-        <Link className="link" to="/eleveForm">
-          Ajouter un élève
-        </Link>
-      </button>
+    <div className="internal-page">
+      <div className="internal-shell">
+        <div className="internal-header">
+          <p className="internal-eyebrow">Gestion eleves</p>
+          <h1 className="internal-title">Liste des eleves</h1>
+          <p className="internal-subtitle">
+            Consultez la liste, ouvrez une fiche eleve ou ajoutez de nouveaux profils.
+          </p>
+        </div>
 
-      <button className="btn" onClick={handleSupprimeAll}>
-        Supprimer les élèves
-      </button>
+        {eleves && eleves.length > 0 ? (
+          <div className="internal-card-grid">
+            {eleves.map((eleve) => (
+              <div
+                className="internal-list-card"
+                key={eleve.id}
+                onClick={() => handleClick(eleve.id)}
+              >
+                <span className="internal-card-label">Eleve</span>
+                <h3>
+                  {eleve.nom} {eleve.prenom}
+                </h3>
+                <p className="internal-card-text">Identifiant : {eleve.id}</p>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="internal-empty">
+            Aucun eleve a afficher pour le moment.
+          </div>
+        )}
+
+        <div className="internal-actions">
+          <Link className="btn internal-action-link" to="/eleveForm">
+            Ajouter un eleve
+          </Link>
+
+          <button className="btn" onClick={handleSupprimeAll}>
+            Supprimer les eleves
+          </button>
+        </div>
+      </div>
     </div>
   );
 }

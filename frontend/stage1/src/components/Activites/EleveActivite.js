@@ -15,6 +15,7 @@ function EleveActivite(props) {
   const indexMoment = props.indexMoment;
   const activiteId = props.activiteId;
   const professeurId = props.professeurId;
+  const semaine = props.semaine;
 
   const [etat, setEtat] = useState(false);
   const [eleves, setEleves] = useState(null);
@@ -25,14 +26,18 @@ function EleveActivite(props) {
 
   useEffect(() => {
     axiosInstance
-      .get(`/eleves/activite/${activiteId}/${indexMoment}`)
+      .get(`/eleves/activite/${activiteId}/${indexMoment}`, {
+        params: {
+          weekStart: semaine,
+        },
+      })
       .then((res) => {
         setEleves(res.data);
       })
       .catch((err) => {
         console.error(err);
       });
-  }, []);
+  }, [activiteId, indexMoment, semaine]);
 
   return (
     eleves &&

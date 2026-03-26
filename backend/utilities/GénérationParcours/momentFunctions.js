@@ -1,8 +1,6 @@
 const Moment = require("../../models/classes/Moment");
 const Activite = require("../../models/Activite");
 const {
-  compteZero,
-  momentsActivite,
   triActivite,
 } = require("./activitesFunctions");
 
@@ -35,7 +33,7 @@ function minMom(ar_m, tableau_moments) {
 //permet d'attribué une activité à un moment précis
 //en prenant en compte le fait qu'elle ne peut apparaitre dans un même moment
 //si ce n'est en ayant moins d"élèves que le nb_eleve_max
-async function activiteByMoment(nb_eleve_max) {
+async function activiteByMoment(nb_eleve_max, fixedActivities = []) {
   //création de tous les moments
   var tableau_moments = new Array(10);
 
@@ -49,16 +47,49 @@ async function activiteByMoment(nb_eleve_max) {
   // ajouter fonction tri activités
 
   const activites_triees = await triActivite(activites);
+  const fixedMomentsByActivity = new Map();
+  const fixedTargetsByActivityMoment = new Map();
+
+  fixedActivities.forEach((fixedActivity) => {
+    const moments = fixedMomentsByActivity.get(fixedActivity.activiteId) || new Set();
+    moments.add(fixedActivity.indexMoment);
+    fixedMomentsByActivity.set(fixedActivity.activiteId, moments);
+
+    const key = `${fixedActivity.activiteId}-${fixedActivity.indexMoment}`;
+    fixedTargetsByActivityMoment.set(
+      key,
+      (fixedTargetsByActivityMoment.get(key) || 0) +
+        fixedActivity.affectedParcoursIndexes.length
+    );
+  });
+
+  fixedActivities.forEach((fixedActivity) => {
+    const key = `${fixedActivity.activiteId}-${fixedActivity.indexMoment}`;
+    if (!tableau_moments[fixedActivity.indexMoment].activite_dispo.has(fixedActivity.activiteId)) {
+      tableau_moments[fixedActivity.indexMoment].addActivite(
+        fixedActivity.activiteId,
+        fixedActivity.activite.nb_eleve_max
+      );
+    }
+
+    tableau_moments[fixedActivity.indexMoment].reduceActiviteCapacity(
+      fixedActivity.activiteId,
+      fixedTargetsByActivityMoment.get(key) * nb_eleve_max
+    );
+  });
 
   for (let i = 0; i < activites_triees.length; i++) {
     let act = activites_triees[i];
-    console.log(act);
-    let nb_realisations = act.activite.nb_realisations;
+    const fixedMoments = fixedMomentsByActivity.get(act.activite.id) || new Set();
+    let nb_realisations = act.activite.nb_realisations - fixedMoments.size;
 
     //détermination du tableau de moment de chaque activite (le moments ou l'activité peut être réalisée)
-    let moment_of_act = act.momentsActivite;
+    let moment_of_act = [...act.momentsActivite];
+    fixedMoments.forEach((momentIndex) => {
+      moment_of_act[momentIndex] = 0;
+    });
 
-    let compt = act.nbrZero; // le nombre de fois dans la semaine ou l'activité n'est pas dispo
+    let compt = moment_of_act.filter((value) => value === 0).length;
 
     while (
       nb_realisations !== 0 &&

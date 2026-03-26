@@ -4,15 +4,21 @@ import ActiviteDescr from "../Activites/ActiviteDescr";
 import ParcoursPdf from "./ParcoursPdf";
 import { PDFDownloadLink } from "@react-pdf/renderer";
 import { MomentsContext } from "../../utils/tabMoments";
+import {
+  buildParcoursLabelMap,
+  getParcoursDisplayName,
+} from "../../utils/parcoursLabels";
 
 function Parc(props) {
   const parcoursId = props.parcoursId;
   const prof = props.profId;
   const eleve = props.eleve;
+  const semaine = props.semaine || localStorage.getItem("semaineStage");
 
   const { tab_moments } = useContext(MomentsContext);
 
   const [etat, setEtat] = useState(false);
+  const [parcoursLabelMap, setParcoursLabelMap] = useState({});
 
   const handleAfficherParc = () => {
     setEtat(!etat);
@@ -37,6 +43,30 @@ function Parc(props) {
       });
   }, []);
 
+  useEffect(() => {
+    if (prof || !semaine) {
+      return;
+    }
+
+    axiosInstance
+      .get("/activiteparcours/parcours", {
+        params: {
+          weekStart: semaine,
+        },
+      })
+      .then((res) => {
+        setParcoursLabelMap(buildParcoursLabelMap(Object.keys(res.data || {})));
+      })
+      .catch((err) => {
+        console.error(err);
+      });
+  }, [prof, semaine]);
+
+  const parcoursDisplayName = getParcoursDisplayName(
+    parcoursId,
+    parcoursLabelMap
+  );
+
   return (
     <div>
       <button className="btn" onClick={() => handleAfficherParc()}>
@@ -45,7 +75,7 @@ function Parc(props) {
         ) : (
           <i className="fa-solid fa-play fa-rotate-90 fa-lg"></i>
         )}{" "}
-        Parcours {parcoursId}
+        {parcoursDisplayName}
       </button>
       <ul className="container liste-activite">
         {activites &&

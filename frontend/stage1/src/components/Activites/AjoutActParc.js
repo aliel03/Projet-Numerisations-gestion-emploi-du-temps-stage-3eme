@@ -2,9 +2,14 @@ import { useState, useEffect, useContext } from "react";
 import axiosInstance from "../../config/axiosConfig";
 import { useNavigate } from "react-router-dom";
 import { MomentsContext } from "../../utils/tabMoments";
+import {
+  buildParcoursLabelMap,
+  getParcoursDisplayName,
+} from "../../utils/parcoursLabels";
 
 function AjoutActParc(props) {
   const activiteId = props.activiteId;
+  const semaine = props.semaine;
 
   const { tab_moments } = useContext(MomentsContext);
 
@@ -21,21 +26,33 @@ function AjoutActParc(props) {
 
   useEffect(() => {
     axiosInstance
-      .get(`/activiteparcours/parcours`)
+      .get(`/activiteparcours/parcours`, {
+        params: {
+          weekStart: semaine,
+        },
+      })
       .then((res) => {
         setParcours(res.data);
+        const parcoursIds = Object.keys(res.data || {});
+        if (parcoursIds.length > 0) {
+          setParcoursId(parcoursIds[0]);
+        }
       })
       .catch((err) => {
         console.error(err);
       });
-  }, []);
+  }, [semaine]);
+
+  const parcoursLabelMap = buildParcoursLabelMap(
+    parcours ? Object.keys(parcours) : []
+  );
 
   const handleSubmit = (e) => {
     e.preventDefault();
     const confirmation = tab_moments
-      ? window.confirm(
+        ? window.confirm(
           "Êtes-vous sûr de vouloir ajouter cette activité au parcours " +
-            parcoursId +
+            getParcoursDisplayName(parcoursId, parcoursLabelMap) +
             " le " +
             tab_moments[indexMoment] +
             " ?"
@@ -47,6 +64,7 @@ function AjoutActParc(props) {
         parcoursId,
         activiteId,
         indexMoment,
+        weekStart: semaine,
       };
 
       axiosInstance
@@ -100,7 +118,7 @@ function AjoutActParc(props) {
               {parcours &&
                 Object.keys(parcours).map((parc) => (
                   <option key={parc} value={parc}>
-                    {parc}
+                    {getParcoursDisplayName(parc, parcoursLabelMap)}
                   </option>
                 ))}
             </select>

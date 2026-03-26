@@ -18,12 +18,17 @@ exports.getProfesseur = async (eleveId) => {
 
 exports.getProfByRole = async (role) => {
   try {
+    const rolesToMatch = [role];
+
+    if (role === "Encadrant" || role === "Tuteur") {
+      rolesToMatch.push("Encadrant et Tuteur");
+    }
+
     return await Professeur.findAll({
       where: {
-        [Op.or]: [
-          { role: role },
-          { role: "Encadrant et Tuteur" }, // dans tous les cas les professeurs ayant pour rôle 'Encadrant et Tuteur' seront toujours retournés
-        ],
+        role: {
+          [Op.in]: rolesToMatch,
+        },
       },
     });
   } catch (err) {

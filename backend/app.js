@@ -22,6 +22,8 @@ const activiteParcoursRoutes = require("./routes/activiteParcoursRoutes");
 const questionRoutes = require("./routes/questionsRoutes");
 const reponseRoutes = require("./routes/reponseRoutes");
 const authRoutes = require("./routes/authRoutes");
+const planningWeekRoutes = require("./routes/planningWeekRoutes");
+const planningFixedActivityRoutes = require("./routes/planningFixedActivityRoutes");
 
 app.use((req, res, next) => {
   res.setHeader("Access-Control-Allow-Origin", "*");
@@ -62,5 +64,11 @@ app.use("/api/reponses", reponseRoutes);
 
 //routes pour l'authentification
 app.use("/api/authentification", authRoutes);
+
+//route semaines de planning
+app.use("/api/planningweeks", planningWeekRoutes);
+
+//route activites fixees avant generation
+app.use("/api/planningfixedactivities", planningFixedActivityRoutes);
 
 module.exports = app;

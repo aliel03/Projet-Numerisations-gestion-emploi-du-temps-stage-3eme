@@ -4,9 +4,10 @@ import axiosInstance from "../../config/axiosConfig";
 import ActiviteDescr from "../../components/Activites/ActiviteDescr";
 import AjoutActAllParc from "../../components/Activites/AjoutActAllParc";
 import AjoutActParc from "../../components/Activites/AjoutActParc";
+import SupprimeActParc from "../../components/Activites/SupprimeActParc";
 import EleveActivite from "../../components/Activites/EleveActivite";
 
-function Activite() {
+function Activite(props) {
   let { id } = useParams();
 
   const userRole = localStorage.getItem("userRole");
@@ -61,10 +62,13 @@ function Activite() {
           <div className="ajout-activite">
             <h2> Ajouter l'activité </h2>
             <div className="ajout-act-parc">
-              <AjoutActParc activiteId={id} />
+              <AjoutActParc activiteId={id} semaine={props.semaine} />
             </div>
             <div className="ajout-act-parc">
-              <AjoutActAllParc activiteId={id} />
+              <AjoutActAllParc activiteId={id} semaine={props.semaine} />
+            </div>
+            <div className="ajout-act-parc">
+              <SupprimeActParc activiteId={id} semaine={props.semaine} />
             </div>
           </div>
         )}
@@ -79,6 +83,7 @@ function Activite() {
                     activiteId={id}
                     indexMoment={i}
                     professeurId={activite.professeurId}
+                    semaine={props.semaine}
                   />
                 </div>
               ))}

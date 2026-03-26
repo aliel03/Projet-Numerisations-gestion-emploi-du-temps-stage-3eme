@@ -5,8 +5,7 @@ import ReponsesEncadrant from "../../components/Reponses/ReponsesEncadrant";
 import ReponsesTuteur from "../../components/Reponses/ReponsesTuteur";
 
 function ReponsesProfesseurs() {
-  const { role } = useParams();
-  const { profId } = useParams();
+  const { role, profId } = useParams();
 
   const [professeurs, setProfesseurs] = useState(null);
 
@@ -15,7 +14,7 @@ function ReponsesProfesseurs() {
       axiosInstance
         .get(`/professeurs/${profId}`)
         .then((res) => {
-          setProfesseurs(res.data);
+          setProfesseurs([res.data]);
         })
         .catch((err) => {
           console.error(err);
@@ -30,15 +29,20 @@ function ReponsesProfesseurs() {
           console.error(err);
         });
     }
-  }, []);
+  }, [profId, role]);
+
+  const titre =
+    role === "Tuteur"
+      ? "Les réponses des tuteurs"
+      : "Les réponses des encadrants";
 
   return (
     professeurs &&
     professeurs.length > 0 && (
       <div>
-        <h1>Les réponses des encadrants</h1>
+        <h1>{titre}</h1>
         {professeurs.map((prof) => (
-          <div>
+          <div key={prof.id}>
             <h3>
               Réponse de {prof.nom} {prof.prenom}
             </h3>

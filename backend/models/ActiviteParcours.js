@@ -38,4 +38,20 @@ Activite.belongsToMany(Parcours, {
   otherKey: "parcoursId",
 });
 
+ActiviteParcours.belongsTo(Parcours, {
+  foreignKey: "parcoursId",
+});
+
+Parcours.hasMany(ActiviteParcours, {
+  foreignKey: "parcoursId",
+});
+
+ActiviteParcours.belongsTo(Activite, {
+  foreignKey: "activiteId",
+});
+
+Activite.hasMany(ActiviteParcours, {
+  foreignKey: "activiteId",
+});
+
 module.exports = ActiviteParcours;

@@ -1,16 +1,42 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import axiosInstance from "../../config/axiosConfig";
+import {
+  buildParcoursLabelMap,
+  getParcoursDisplayName,
+} from "../../utils/parcoursLabels";
 
 function EleveDescr(props) {
   const id = props.id;
   const [eleve, setEleve] = useState(null);
+  const [parcoursLabelMap, setParcoursLabelMap] = useState({});
 
   useEffect(() => {
     axiosInstance
       .get(`/eleves/${id}`)
       .then((res) => {
         setEleve(res.data);
+      })
+      .catch((err) => {
+        console.error(err);
+      });
+  }, []);
+
+  useEffect(() => {
+    const semaine = localStorage.getItem("semaineStage");
+
+    if (!semaine) {
+      return;
+    }
+
+    axiosInstance
+      .get("/activiteparcours/parcours", {
+        params: {
+          weekStart: semaine,
+        },
+      })
+      .then((res) => {
+        setParcoursLabelMap(buildParcoursLabelMap(Object.keys(res.data || {})));
       })
       .catch((err) => {
         console.error(err);
@@ -56,7 +82,12 @@ function EleveDescr(props) {
           </li>
 
           <li></li>
-          <li> parcours de l'élève : {eleve.parcoursId} </li>
+          <li>
+            parcours de l'élève :{" "}
+            {eleve.parcoursId
+              ? getParcoursDisplayName(eleve.parcoursId, parcoursLabelMap)
+              : "Non attribue"}
+          </li>
         </ul>
       </div>
     )

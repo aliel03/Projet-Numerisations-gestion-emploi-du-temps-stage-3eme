@@ -3,7 +3,9 @@ const ParcoursServices = require("../services/parcoursServices");
 
 exports.getAllActivitesParcours = async (req, res) => {
   try {
-    const allActParc = await ActiviteParcoursServices.getAllActivitesParcours();
+    const allActParc = await ActiviteParcoursServices.getAllActivitesParcours(
+      req.query.weekStart
+    );
     res.json(allActParc);
   } catch (err) {
     res
@@ -16,7 +18,7 @@ exports.getAllActivitesParcours = async (req, res) => {
 exports.getActivitesByAllParcours = async (req, res) => {
   try {
     const actAllParc = {};
-    const allParc = await ParcoursServices.getAllParcours();
+    const allParc = await ParcoursServices.getAllParcours(req.query.weekStart);
     for (const actParc of allParc) {
       const allActParc = await ActiviteParcoursServices.getActiviteByParcours(
         actParc.id
@@ -51,7 +53,8 @@ exports.getActiviteParcByProf = async (req, res) => {
   const prof_id = req.params.profId;
   try {
     const parcours_pr = await ActiviteParcoursServices.getActParcByProf(
-      prof_id
+      prof_id,
+      req.query.weekStart
     );
     res.status(200).json(parcours_pr);
   } catch (err) {
@@ -95,11 +98,12 @@ exports.associateActiviteParcours = async (req, res) => {
 };
 
 exports.associateActToAllParc = async (req, res) => {
-  const { activiteId, indexMoment } = req.body;
+  const { activiteId, indexMoment, weekStart } = req.body;
   try {
     const reponse = await ActiviteParcoursServices.associateActToAllParc(
       activiteId,
-      indexMoment
+      indexMoment,
+      weekStart
     );
     if (reponse) {
       res.json({
@@ -114,5 +118,24 @@ exports.associateActToAllParc = async (req, res) => {
           "Un problème est survenu lors de l'ajout de l'activité dans les parcours",
         error,
       });
+  }
+};
+
+exports.deleteActiviteParcoursAssociation = async (req, res) => {
+  const { parcoursId, activiteId } = req.query;
+
+  try {
+    await ActiviteParcoursServices.deleteActiviteParcoursAssociation(
+      parcoursId,
+      activiteId
+    );
+    res.status(200).json({
+      message: "L'association entre l'activité et le parcours a été supprimée",
+    });
+  } catch (error) {
+    res.status(404).json({
+      message: "Aucune association activité-parcours trouvée à supprimer",
+      error,
+    });
   }
 };

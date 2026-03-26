@@ -16,5 +16,9 @@ router.get(
 );
 router.post("/", ActiviteParcoursControllers.associateActiviteParcours);
 router.post("/parcours", ActiviteParcoursControllers.associateActToAllParc);
+router.delete(
+  "/",
+  ActiviteParcoursControllers.deleteActiviteParcoursAssociation
+);
 
 module.exports = router;

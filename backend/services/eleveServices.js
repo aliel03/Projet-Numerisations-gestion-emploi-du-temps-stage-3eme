@@ -9,6 +9,7 @@ const {
 } = require("../utilities/passwordFunctions");
 const bcrypt = require("bcrypt");
 const emailTemplates = require("../utilities/emailTemplates");
+const planningWeekServices = require("./planningWeekServices");
 
 exports.getAllEleves = async () => {
   const eleves = await Eleve.findAll();
@@ -23,16 +24,35 @@ exports.getEleveById = async (eleveId) => {
 // permet de faire la liste des élèves pour une activité à un moment donné
 // activiteId : l'id de l'activité en question
 // indexMoment : le moment dans la semaine : 0 = lundi matin, 1 lundi après-midi...
-exports.getElevesByActMoment = async (activiteId, indexMoment) => {
+exports.getElevesByActMoment = async (activiteId, indexMoment, weekStart) => {
   //commence par récupérer les parcours ayant cette activité à ce moment
   // il peut y en avoir plusieurs car une meme activité peut apparaitre au meme moment sur plusieurs parcours
   //cas ou l'activité peut accueillir plusieurs élèves en même temps
+  const planningWeek = weekStart
+    ? await planningWeekServices.getPlanningWeekByStart(weekStart)
+    : null;
+
+  if (weekStart && !planningWeek) {
+    return [];
+  }
+
   const parcours = await ActiviteParcours.findAll({
     attributes: ["parcoursId"],
     where: {
       activiteId: activiteId,
       indexMoment: indexMoment,
     },
+    include: planningWeek
+      ? [
+          {
+            model: Parcours,
+            where: {
+              planningWeekId: planningWeek.id,
+            },
+            attributes: [],
+          },
+        ]
+      : [],
   });
 
   //ensuite on récupère les élèves qui ont un parcoursId appartenant aux parcours trouvé precedemment
@@ -188,16 +208,44 @@ exports.assignTuteur = async (eleve) => {
 };
 
 //Assigner un parcours disponible à un élève
-exports.assignParcours = async (eleveId, nb_eleve_max) => {
+exports.assignParcours = async (eleveId, nb_eleve_max, weekStart) => {
   const eleve = await Eleve.findByPk(eleveId);
+  const planningWeek = weekStart
+    ? await planningWeekServices.getPlanningWeekByStart(weekStart)
+    : null;
+  const parcoursWhere = {};
+
+  if (weekStart && !planningWeek) {
+    throw new Error("Aucune semaine de planning trouvee");
+  }
+
+  if (planningWeek) {
+    parcoursWhere.planningWeekId = planningWeek.id;
+  }
+
+  const all_parcours = await Parcours.findAll({
+    where: parcoursWhere,
+  });
+
+  const parcoursIds = all_parcours.map((parcours) => parcours.id);
+
+  if (all_parcours.length === 0) {
+    throw new Error("Aucun parcours disponible pour cette semaine");
+  }
 
   // Comptage des parcours
   const counts = await Eleve.findAndCountAll({
     attributes: ["parcoursId"],
     group: ["parcoursId"],
+    where:
+      parcoursIds.length > 0
+        ? {
+            parcoursId: {
+              [Op.in]: parcoursIds,
+            },
+          }
+        : undefined,
   });
-
-  const all_parcours = await Parcours.findAll();
 
   // les parcours ayant été attribué à nb_eleve_max élèves
   const parc_not_available = [];
@@ -229,6 +277,11 @@ exports.assignParcours = async (eleveId, nb_eleve_max) => {
   if (eleve.password) {
     await this.sendPassword(eleve.id);
   }
+
+  if (weekStart) {
+    await planningWeekServices.markWeekManualAdjustmentByStart(weekStart);
+  }
+
   return eleve;
 };
 

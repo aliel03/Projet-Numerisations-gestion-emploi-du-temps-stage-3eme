@@ -1,4 +1,17 @@
-@import url('https://fonts.googleapis.com/css?family=Quicksand:400,700');
+:root {
+  --color-primary: #532655;
+  --color-secondary: #007c80;
+  --color-background: #f8f2ef;
+  --color-surface: rgba(255, 255, 255, 0.62);
+  --color-surface-strong: #fffaf7;
+  --color-text: #503f45;
+  --color-text-soft: #6f5f64;
+  --color-border: rgba(83, 38, 85, 0.18);
+  --color-shadow: rgba(83, 38, 85, 0.12);
+  --color-accent-soft: rgba(0, 124, 128, 0.12);
+  --font-title: "Oswald", sans-serif;
+  --font-body: "Open Sans", sans-serif;
+}
 
 * {
   box-sizing : border-box;
@@ -6,20 +19,40 @@
   margin: 0;
 }
 
-body {
-  background: #f2e9e4;
-  background: linear-gradient(90deg, #f2e9e4 50%, rgba(248,239,217,1) 100%);
-  background-size: 200% 100%;
-  min-height: 100vh;
-  font-weight: 400;
-  font-family: 'Quicksand', serif;
-  color: #6c584c;
+html {
+  width: 100%;
+  min-height: 100%;
 }
 
-h1,h2,h3,h4,h5,h6,label, span{
+body {
+  background: linear-gradient(135deg, #f7f0ed 0%, #f8f2ef 52%, #f2f7f7 100%);
+  min-height: 100vh;
+  font-weight: 400;
+  font-family: var(--font-body);
+  color: var(--color-text);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+h1, h2, h3 {
   margin: 15px;
-  font-weight: 500;
-  font-family: 'Fira sans', sans-serif;
+  font-family: var(--font-title);
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  line-height: 1.1;
+  color: var(--color-primary);
+}
+
+h4, h5, h6, label, span {
+  margin: 15px;
+  font-family: var(--font-body);
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+p, li, input, textarea, select, button, a {
+  font-family: var(--font-body);
 }
 
 body, html, App, #root, .auth-wrapper {
@@ -78,29 +111,32 @@ body, html, App, #root, .auth-wrapper {
 }
 
 .btn {
-  border-radius: 15px;
-  background: rgb(201, 173, 166);
-  padding: 10px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 16px;
+  background: var(--color-primary);
+  padding: 10px 18px;
   font-size: 15px;
+  font-weight: 700;
   margin: 10px;
   cursor: pointer;
-  color: #6c584c;
+  color: #ffffff;
   max-height: 50px;
-  border-color: #6c584c;
-  border: none;
-  box-shadow: 0 0 .4vw rgb(107, 88, 76, 0.2), 0 0 0 .15vw transparent;
+  border: 1px solid transparent;
+  box-shadow: 0 10px 22px var(--color-shadow);
+  transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
 }
 
 .btn:hover {
-  background: #6c584c;
-  color:#c9ada7 ;
-  border: #6c584c;
-  transition: .4s;
-  box-shadow: 0 0 0 .15vw #6c584c;
+  background: var(--color-secondary);
+  color: #ffffff;
+  box-shadow: 0 14px 28px rgba(0, 124, 128, 0.18);
+  transform: translateY(-1px);
 }
 
 .btn:hover .link{
-  color: #c9ada7;
+  color: #ffffff;
   transition: .4s;
   cursor: pointer;
 }

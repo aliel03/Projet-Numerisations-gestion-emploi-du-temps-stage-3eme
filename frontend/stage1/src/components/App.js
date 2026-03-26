@@ -9,7 +9,9 @@ function App() {
   const userId = localStorage.getItem("userId");
 
   const [user, setUser] = useState(null);
-  const [semaine, setSemaine] = useState("");
+  const [semaine, setSemaine] = useState(() => {
+    return localStorage.getItem("semaineStage") || "";
+  });
 
   useEffect(() => {
     if (personne && userId) {
@@ -24,6 +26,10 @@ function App() {
         });
     }
   }, []);
+
+  useEffect(() => {
+    localStorage.setItem("semaineStage", semaine);
+  }, [semaine]);
 
   return (
     <div className="App">

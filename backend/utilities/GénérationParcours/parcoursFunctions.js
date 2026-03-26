@@ -1,21 +1,41 @@
-const Activite = require("../../models/Activite");
 const Parcours = require("../../models/Parcours");
 const ActiviteParcours = require("../../models/ActiviteParcours");
-const { activiteByMoment, minMom } = require("./momentFunctions");
+const { activiteByMoment } = require("./momentFunctions");
 
 //paramètre : nombre de parcours souhaité à indiquer par l'admin
 //permet de créer des parcours en récupérant des activtiés pour chaque moment de la semaine si cela est possible
-async function associeParcoursActivite(nb_parcours, nb_eleve_max) {
+async function associeParcoursActivite(
+  nb_parcours,
+  nb_eleve_max,
+  planningWeekId,
+  fixedActivities = []
+) {
   try {
     // Création des parcours
     var tableau_parcours = [];
     for (let i = 0; i < nb_parcours; i++) {
-      const newParcours = await Parcours.create();
+      const newParcours = await Parcours.create({ planningWeekId });
       tableau_parcours.push(newParcours);
     }
 
+    for (const fixedActivity of fixedActivities) {
+      for (const parcoursIndex of fixedActivity.affectedParcoursIndexes) {
+        const parcours = tableau_parcours[parcoursIndex];
+
+        if (!parcours) {
+          continue;
+        }
+
+        await ActiviteParcours.create({
+          parcoursId: parcours.id,
+          activiteId: fixedActivity.activiteId,
+          indexMoment: fixedActivity.indexMoment,
+        });
+      }
+    }
+
     // Récupère les moments et leurs activités
-    const moments_pleins = await activiteByMoment(nb_eleve_max);
+    const moments_pleins = await activiteByMoment(nb_eleve_max, fixedActivities);
     for (let j = 0; j < moments_pleins.length; j++) {
       //on parcours les moments de la semaine
       for (
@@ -35,6 +55,14 @@ async function associeParcoursActivite(nb_parcours, nb_eleve_max) {
         const idActivites = [];
         for (const act of activites) {
           idActivites.push(act.activiteId);
+        }
+
+        const hasActiviteOnMoment = activites.some(
+          (activiteParcours) => activiteParcours.indexMoment === j
+        );
+
+        if (hasActiviteOnMoment) {
+          continue;
         }
 
         //permet récupération d'une activité pour un moment donné s'il y en a de dispo encore pour ce moment

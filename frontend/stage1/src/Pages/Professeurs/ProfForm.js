@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axiosInstance from "../../config/axiosConfig";
 import ProfesseurFichier from "../../components/Professeurs/ProfesseurFichier";
+import "../../style/EntryPages.css";
 
 function ProfForm() {
   const userRole = localStorage.getItem("userRole");
@@ -69,125 +70,144 @@ function ProfForm() {
   };
 
   return (
-    <div>
-      <h3>Formulaire accueillant</h3>
-
-      {errorMessage && <p style={{ color: "red" }}>{errorMessage}</p>}
-      {successMessage && <p style={{ color: "green" }}>{successMessage}</p>}
-
-      <form onSubmit={handleSubmit}>
-        <div className="label-form">
-          <label>Nom</label>
-          <input
-            type="text"
-            value={nom}
-            onChange={(e) => setNom(e.target.value)}
-            placeholder="Nom"
-            required
-          />
+    <div className="entry-page">
+      <div className="entry-shell">
+        <div className="entry-header">
+          <span className="entry-accent is-mentor">Espace encadrant</span>
+          <h1 className="entry-title is-mentor">Inscription encadrant</h1>
+          <p className="entry-subtitle">
+            Creez votre profil pour accompagner des eleves, proposer une
+            activite ou acceder a l&apos;espace administrateur si besoin.
+          </p>
         </div>
 
-        <div className="label-form">
-          <label>Prénom</label>
-          <input
-            type="text"
-            value={prenom}
-            onChange={(e) => setPrenom(e.target.value)}
-            placeholder="Prénom"
-            required
-          />
-        </div>
-
-        <div className="label-form">
-          <label>Email</label>
-          <input
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            placeholder="Email"
-            required
-          />
-        </div>
-
-        <div className="label-form">
-          <label>Mot de passe</label>
-          <input
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            placeholder="Mot de passe"
-            required
-          />
-        </div>
-
-        <div className="label-form">
-          <label>Numéro de téléphone</label>
-          <input
-            type="text"
-            value={numero_tel}
-            onChange={(e) => setNum(e.target.value)}
-            placeholder="Numéro de téléphone"
-            required
-          />
-        </div>
-
-        <div className="label-form">
-          <label>Métier</label>
-          <input
-            type="text"
-            value={metier}
-            onChange={(e) => setMetier(e.target.value)}
-            placeholder="Métier"
-            required
-          />
-        </div>
-
-        <div className="label-form">
-          <label>Établissement/labo/...</label>
-          <input
-            type="text"
-            value={etablissement}
-            onChange={(e) => setEtablissement(e.target.value)}
-            placeholder="Établissement..."
-            required
-          />
-        </div>
-
-        <div className="label-form">
-          <label>Je souhaite être...</label>
-          <select
-            value={role}
-            onChange={(e) => setRole(e.target.value)}
-            required
-          >
-            <option value="Encadrant">Encadrant d'une activité</option>
-            <option value="Tuteur">Tuteur d'un élève</option>
-            <option value="Encadrant et Tuteur">Tuteur et encadrant</option>
-            {userRole === "Admin" && <option value="Admin">Admin</option>}
-          </select>
-        </div>
-
-        {(role === "Tuteur" ||
-          role === "Encadrant et Tuteur" ||
-          role === "Admin") && (
-          <div className="label-form">
-            <label>Je souhaite être tuteur de combien d'élèves ?</label>
-            <input
-              type="number"
-              min="0"
-              value={nb_eleve_tuteur}
-              onChange={(e) => setNombre(e.target.value)}
-              required
-            />
-          </div>
+        {errorMessage && <p className="entry-message is-error">{errorMessage}</p>}
+        {successMessage && (
+          <p className="entry-message is-success">{successMessage}</p>
         )}
 
-        <button className="btn" type="submit">
-          {isRoleWithActivity
-            ? "Continuer vers la création d'activité"
-            : "Valider"}
-        </button>
-      </form>
+        <div className="entry-card is-form">
+          <form onSubmit={handleSubmit} className="entry-form">
+            <div className="entry-form-grid">
+              <div className="label-form">
+                <label>Nom</label>
+                <input
+                  type="text"
+                  value={nom}
+                  onChange={(e) => setNom(e.target.value)}
+                  placeholder="Nom"
+                  required
+                />
+              </div>
+
+              <div className="label-form">
+                <label>Prenom</label>
+                <input
+                  type="text"
+                  value={prenom}
+                  onChange={(e) => setPrenom(e.target.value)}
+                  placeholder="Prenom"
+                  required
+                />
+              </div>
+
+              <div className="label-form">
+                <label>Email</label>
+                <input
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="Email"
+                  required
+                />
+              </div>
+
+              <div className="label-form">
+                <label>Mot de passe</label>
+                <input
+                  type="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder="Mot de passe"
+                  required
+                />
+              </div>
+
+              <div className="label-form">
+                <label>Numero de telephone</label>
+                <input
+                  type="text"
+                  value={numero_tel}
+                  onChange={(e) => setNum(e.target.value)}
+                  placeholder="Numero de telephone"
+                  required
+                />
+              </div>
+
+              <div className="label-form">
+                <label>Metier</label>
+                <input
+                  type="text"
+                  value={metier}
+                  onChange={(e) => setMetier(e.target.value)}
+                  placeholder="Metier"
+                  required
+                />
+              </div>
+
+              <div className="label-form full-width">
+                <label>Etablissement / labo / structure</label>
+                <input
+                  type="text"
+                  value={etablissement}
+                  onChange={(e) => setEtablissement(e.target.value)}
+                  placeholder="Etablissement..."
+                  required
+                />
+              </div>
+
+              <div className="label-form full-width">
+                <label>Je souhaite etre...</label>
+                <select
+                  value={role}
+                  onChange={(e) => setRole(e.target.value)}
+                  required
+                >
+                  <option value="Encadrant">Encadrant d&apos;une activite</option>
+                  <option value="Tuteur">Tuteur d&apos;un eleve</option>
+                  <option value="Encadrant et Tuteur">
+                    Tuteur et encadrant
+                  </option>
+                  {userRole === "Admin" && <option value="Admin">Admin</option>}
+                </select>
+              </div>
+
+              {(role === "Tuteur" ||
+                role === "Encadrant et Tuteur" ||
+                role === "Admin") && (
+                <div className="label-form full-width">
+                  <label>Je souhaite etre tuteur de combien d&apos;eleves ?</label>
+                  <input
+                    type="number"
+                    min="0"
+                    value={nb_eleve_tuteur}
+                    onChange={(e) => setNombre(e.target.value)}
+                    required
+                  />
+                </div>
+              )}
+            </div>
+
+            <div className="entry-form-actions">
+              <button className="btn" type="submit">
+                {isRoleWithActivity
+                  ? "Continuer vers la creation d'activite"
+                  : "Valider"}
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
 
       {userRole === "Admin" && <ProfesseurFichier />}
     </div>

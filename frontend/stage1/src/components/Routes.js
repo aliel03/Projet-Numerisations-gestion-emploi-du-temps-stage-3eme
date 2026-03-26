@@ -56,27 +56,33 @@ function Rootes(props) {
 
       <Route path="/eleveForm" element={<EleveForm />} />
       <Route exact path="/eleves" element={<Eleves />} />
-      <Route path="/eleve/:id" element={<Eleve nbEleveMax={nbEleveMax} />} />
+      <Route
+        path="/eleve/:id"
+        element={<Eleve nbEleveMax={nbEleveMax} semaine={semaine} />}
+      />
 
       <Route
         path="/activiteForm"
         element={<ActiviteForm semaine={semaine} />}
       />
-      <Route path="/activite/:id" element={<Activite />} />
+      <Route path="/activite/:id" element={<Activite semaine={semaine} />} />
       <Route path="/activites" element={<Activtes />} />
 
       <Route
         path="/parcoursGeneration"
         element={
           <ParcoursGeneration
-            semain={semaine}
+            semaine={semaine}
             setSemaine={setSemaine}
             nbEleveMax={nbEleveMax}
             setNbEleveMax={updateNbEleveMax}
           />
         }
       />
-      <Route path="/parcours" element={<Parcours semaine={semaine} />} />
+      <Route
+        path="/parcours"
+        element={<Parcours semaine={semaine} setSemaine={setSemaine} />}
+      />
 
       <Route path="/questionForm" element={<QuestionForm />} />
       <Route path="/questions" element={<Questions />} />

@@ -5,6 +5,7 @@ import { MomentsContext } from "../../utils/tabMoments";
 
 function AjoutActAllParc(props) {
   const activiteId = props.activiteId;
+  const semaine = props.semaine;
 
   const { tab_moments } = useContext(MomentsContext);
 
@@ -29,6 +30,7 @@ function AjoutActAllParc(props) {
       const data = {
         activiteId,
         indexMoment,
+        weekStart: semaine,
       };
       axiosInstance
         .post(`/activiteparcours/parcours`, data)

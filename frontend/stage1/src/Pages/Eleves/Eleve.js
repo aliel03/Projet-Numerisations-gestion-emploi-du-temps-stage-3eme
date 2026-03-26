@@ -16,6 +16,7 @@ function Eleve(props) {
   const personne = localStorage.getItem("personne");
 
   const nbEleveMax = props.nbEleveMax;
+  const semaine = props.semaine;
 
   let { id } = useParams();
 
@@ -81,6 +82,7 @@ function Eleve(props) {
     if (confirmation) {
       const data = {
         nbEleveMax: parseInt(nbEleveMax),
+        weekStart: semaine,
       };
 
       axiosInstance
@@ -176,7 +178,7 @@ function Eleve(props) {
         {eleve.parcoursId && (
           <div className="contain-parcours">
             <h1>Mon parcours :</h1>
-            <Parc parcoursId={eleve.parcoursId} eleve={eleve} />
+            <Parc parcoursId={eleve.parcoursId} eleve={eleve} semaine={semaine} />
           </div>
         )}
       </div>

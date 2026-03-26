@@ -1,7 +1,7 @@
 import "../../style/Navbar/Navbar.css";
 import "@fortawesome/fontawesome-svg-core";
 import { Link, useNavigate } from "react-router-dom";
-import { useState, useEffect, useRef } from "react";
+import { useState } from "react";
 
 function Navbar(props) {
   const user = props.user;
@@ -22,8 +22,8 @@ function Navbar(props) {
 
   return (
     <nav className="nav">
-      <Link className="link logo" to="/">
-        Acceuil
+      <Link className="link logo" to="/" aria-label="DigiFilles">
+        <img className="logo-image" src="/digifilles.png" alt="DigiFilles" />
       </Link>
 
       <div>
@@ -51,7 +51,7 @@ function Navbar(props) {
                 </li>
                 <li>
                   <Link className="link" to="/professeurs">
-                    Liste des accueillants
+                    Liste des encadrants
                   </Link>
                 </li>
                 <li>
@@ -71,12 +71,12 @@ function Navbar(props) {
                 </li>
                 <li>
                   <Link className="link" to="/questionForm">
-                    Ajout question
+                    Ajouter une question
                   </Link>
                 </li>
                 <li>
                   <Link className="link" to="/questions">
-                    liste des Questions
+                    Liste des questions
                   </Link>
                 </li>
                 <li>
@@ -91,12 +91,14 @@ function Navbar(props) {
                 </li>
                 <li>
                   <Link className="link" to="/reponses/Tuteur">
-                    Réponses Tuteur
+                    Réponses tuteurs
                   </Link>
                 </li>
-                <button className="btn" onClick={handleSignOut}>
-                  Se déconnecter
-                </button>
+                <li>
+                  <button className="btn nav-logout-btn" onClick={handleSignOut}>
+                    Se deconnecter
+                  </button>
+                </li>
               </>
             ) : (
               <>
@@ -123,13 +125,17 @@ function Navbar(props) {
                   </>
                 )}
                 {user.role !== "Tuteur" && (
-                  <>
-                    <li>Mes activités</li>
-                  </>
+                  <li>
+                    <Link className="link" to="/activites">
+                      Mes activites
+                    </Link>
+                  </li>
                 )}
-                <button className="btn" onClick={handleSignOut}>
-                  Se déconnecter
-                </button>
+                <li>
+                  <button className="btn nav-logout-btn" onClick={handleSignOut}>
+                    Se deconnecter
+                  </button>
+                </li>
               </>
             )
           ) : (
@@ -144,9 +150,11 @@ function Navbar(props) {
                   Mon tuteur
                 </Link>
               </li>
-              <button className="btn" onClick={handleSignOut}>
-                Se déconnecter
-              </button>
+              <li>
+                <button className="btn nav-logout-btn" onClick={handleSignOut}>
+                  Se deconnecter
+                </button>
+              </li>
             </>
           )}
         </ul>
