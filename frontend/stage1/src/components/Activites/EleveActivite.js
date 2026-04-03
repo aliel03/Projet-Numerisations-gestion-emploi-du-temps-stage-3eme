@@ -2,7 +2,6 @@ import { useState, useEffect, useContext } from "react";
 import axiosInstance from "../../config/axiosConfig";
 import EleveDescr from "../Eleves/EleveDescr";
 import ListeEleves from "../Eleves/ListeElevesPdf";
-import QuestionQuestionnaire from "../Questions/QuestionQuestionnaire";
 import { PDFDownloadLink } from "@react-pdf/renderer";
 import { MomentsContext } from "../../utils/tabMoments";
 
@@ -59,15 +58,6 @@ function EleveActivite(props) {
             Object.values(eleves).map((eleve) => (
               <div key={eleve.id}>
                 <EleveDescr id={eleve.id} />
-                {etat && userId && professeurId === userId && (
-                  <QuestionQuestionnaire
-                    questionnaire="Encadrant"
-                    repondantProfId={professeurId}
-                    activiteId={activiteId}
-                    indexMoment={indexMoment}
-                    eleveConcerneId={eleve.id}
-                  />
-                )}
               </div>
             ))}
         </div>

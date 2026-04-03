@@ -13,6 +13,9 @@ function QuestionRep(props) {
   const [contenuRep, setContenuRep] = useState("");
   const [repondu, setRepondu] = useState(false);
   const [reponseId, setRepId] = useState(0);
+  const [savedContenu, setSavedContenu] = useState("");
+  const [isEditingResponse, setIsEditingResponse] = useState(false);
+  const [feedbackMessage, setFeedbackMessage] = useState("");
 
   useEffect(() => {
     const params = {
@@ -28,7 +31,8 @@ function QuestionRep(props) {
       .then((res) => {
         if (res.data) {
           setRepondu(true);
-          setContenuRep(res.data.contenu);
+          setSavedContenu(res.data.contenu);
+          setContenuRep("");
           setRepId(res.data.id);
         }
       })
@@ -39,6 +43,7 @@ function QuestionRep(props) {
 
   const handleReponse = (questionId, e) => {
     e.preventDefault();
+    setFeedbackMessage("");
     const dataRep = {
       contenu: contenuRep,
       repondantEleveId,
@@ -54,7 +59,10 @@ function QuestionRep(props) {
       .then((res) => {
         setRepondu(true);
         setRepId(res.data.id);
-        setContenuRep(res.data.contenu);
+        setSavedContenu(res.data.contenu);
+        setContenuRep("");
+        setIsEditingResponse(false);
+        setFeedbackMessage("Reponse enregistree.");
       })
       .catch((err) => {
         console.error(err);
@@ -63,6 +71,7 @@ function QuestionRep(props) {
 
   const updateReponse = (e) => {
     e.preventDefault();
+    setFeedbackMessage("");
 
     const data = {
       contenu: contenuRep,
@@ -71,30 +80,58 @@ function QuestionRep(props) {
     axiosInstance
       .put(`/reponses/${reponseId}`, data)
       .then((res) => {
-        setContenuRep(res.data.contenu);
+        setSavedContenu(res.data.contenu);
+        setContenuRep("");
+        setIsEditingResponse(false);
+        setFeedbackMessage("Reponse mise a jour.");
       })
       .catch((err) => {
         console.error(err);
       });
   };
 
+  const handleStartUpdate = () => {
+    setFeedbackMessage("");
+    setContenuRep(savedContenu);
+    setIsEditingResponse(true);
+  };
+
   return (
-    <form>
+    <form className="question-rep-form">
       <label>{question.contenu}</label>
-      <input
-        type="textarea"
+      <p className="question-rep-note">Cette reponse n&apos;est pas anonyme.</p>
+      <textarea
+        className="question-rep-input"
         value={contenuRep}
         onChange={(e) => setContenuRep(e.target.value)}
-        required
+        placeholder={
+          repondu && !isEditingResponse
+            ? "Une reponse a deja ete enregistree pour cette question."
+            : "Ecris ta reponse ici."
+        }
+        readOnly={repondu && !isEditingResponse}
+        required={!repondu || isEditingResponse}
       />
-      {repondu ? (
-        <button className="btn" onClick={(e) => updateReponse(e)}>
-          <i className="fa-solid fa-pen"></i>
+      {repondu && !isEditingResponse ? (
+        <button className="btn" type="button" onClick={handleStartUpdate}>
+          Modifier ma reponse
         </button>
       ) : (
-        <button className="btn" onClick={(e) => handleReponse(question.id, e)}>
-          <i className="fa-solid fa-check"></i>
+        <button
+          className="btn"
+          type="button"
+          onClick={(e) =>
+            repondu ? updateReponse(e) : handleReponse(question.id, e)
+          }
+        >
+          {repondu ? "Enregistrer la modification" : "Valider ma reponse"}
         </button>
+      )}
+      {feedbackMessage && (
+        <p className="question-rep-feedback">{feedbackMessage}</p>
+      )}
+      {repondu && !isEditingResponse && !feedbackMessage && (
+        <p className="question-rep-feedback">Reponse deja enregistree.</p>
       )}
     </form>
   );

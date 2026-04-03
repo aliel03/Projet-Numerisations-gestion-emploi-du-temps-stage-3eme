@@ -4,7 +4,6 @@ import { useParams } from "react-router-dom";
 import Parc from "../../components/Parcours/Parc";
 import EleveDescr from "../../components/Eleves/EleveDescr";
 import EleveGroupe from "../../components/Eleves/EleveGroupe";
-import QuestionQuestionnaire from "../../components/Questions/QuestionQuestionnaire";
 import ElevePdf from "../../components/Eleves/ElevePdf";
 import { PDFDownloadLink } from "@react-pdf/renderer";
 import "../../style/Eleves/Eleves.css";
@@ -19,6 +18,7 @@ function Eleve(props) {
   const semaine = props.semaine;
 
   let { id } = useParams();
+  const isOwnStudentView = personne === "eleves" && String(userId) === String(id);
 
   const [eleve, setEleve] = useState(null);
 
@@ -136,7 +136,8 @@ function Eleve(props) {
             </div>
           )}
 
-          {((personne === "eleves" && userId === id) ||
+          {!isOwnStudentView &&
+            ((personne === "eleves" && userId === id) ||
             userRole === "Admin" ||
             parseInt(userId) === eleve.professeurId) &&
             eleve.parcoursId && (
@@ -144,15 +145,6 @@ function Eleve(props) {
                 <div>
                   <EleveGroupe id={id} eleve={eleve} />
                 </div>
-                {userId === id && personne === "eleves" && (
-                  <div className="contain-questionnaire">
-                    <h1>Questionnaire</h1>
-                    <QuestionQuestionnaire
-                      questionnaire="Eleve"
-                      repondantEleveId={id}
-                    />
-                  </div>
-                )}
               </div>
             )}
 
@@ -175,7 +167,7 @@ function Eleve(props) {
             </div>
           )}
         </div>
-        {eleve.parcoursId && (
+        {!isOwnStudentView && eleve.parcoursId && (
           <div className="contain-parcours">
             <h1>Mon parcours :</h1>
             <Parc parcoursId={eleve.parcoursId} eleve={eleve} semaine={semaine} />

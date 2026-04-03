@@ -53,6 +53,7 @@ exports.addActivite = async (req, res) => {
     v2,
     lieu,
     lieu_rdv,
+    commentaire_admin,
     professeurId,
   } = req.body;
   try {
@@ -73,6 +74,7 @@ exports.addActivite = async (req, res) => {
       v2,
       lieu,
       lieu_rdv,
+      commentaire_admin,
       professeurId,
     };
     const activite = await activiteService.createActivite(activiteData);
@@ -103,6 +105,7 @@ exports.updateActivite = async (req, res) => {
     v2,
     lieu,
     lieu_rdv,
+    commentaire_admin,
     professeurId,
   } = req.body;
   try {
@@ -123,6 +126,7 @@ exports.updateActivite = async (req, res) => {
       v2,
       lieu,
       lieu_rdv,
+      commentaire_admin,
       professeurId,
     };
     const activite = await activiteService.updateActivite(

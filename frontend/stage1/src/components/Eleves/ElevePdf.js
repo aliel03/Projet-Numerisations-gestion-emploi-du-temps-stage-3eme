@@ -71,7 +71,6 @@ function ElevePdf(props) {
 
   const [eleve, setEleve] = useState(null);
   const [activites, setActivites] = useState(null);
-  const [groupe, setGroupe] = useState(null);
   const [tuteur, setTuteur] = useState(null);
 
   useEffect(() => {
@@ -97,17 +96,6 @@ function ElevePdf(props) {
         });
     }
   }, [!eleve]);
-
-  useEffect(() => {
-    axiosInstance
-      .get(`/eleves/groupe/${id}`)
-      .then((res) => {
-        setGroupe(res.data);
-      })
-      .catch((err) => {
-        console.error(err);
-      });
-  }, []);
 
   useEffect(() => {
     if (eleve && parseInt(eleve.professeurId)) {
@@ -156,15 +144,6 @@ function ElevePdf(props) {
                 ))}
               </>
             )}
-          </View>
-          <View>
-            <Text style={styles.title}>Mon groupe : </Text>
-            {groupe &&
-              groupe.map((eleve) => (
-                <View style={styles.section}>
-                  <EleveDescrPdf key={eleve.id} id={eleve.id} />
-                </View>
-              ))}
           </View>
           {tuteur && (
             <View>

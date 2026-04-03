@@ -36,6 +36,23 @@ exports.getElevesByActMoment = async (req, res) => {
   }
 };
 
+exports.getElevesByEncadrant = async (req, res) => {
+  const professeurId = req.params.professeurId;
+
+  try {
+    const eleves = await EleveService.getElevesByEncadrant(
+      professeurId,
+      req.query.weekStart
+    );
+    res.json(eleves);
+  } catch (error) {
+    res.status(500).json({
+      message: "Error aucun eleve trouve pour cet encadrant",
+      error,
+    });
+  }
+};
+
 exports.getGroupe = async (req, res) => {
   const eleveId = req.params.id;
   try {
@@ -95,6 +112,21 @@ exports.confirmeEleve = async (req, res) => {
   }
 };
 
+exports.confirmeAllEleves = async (req, res) => {
+  try {
+    const summary = await EleveService.assignTuteurToAllEleves();
+    res.status(200).json({
+      message: "Les tuteurs ont ete attribues aux eleves eligibles.",
+      summary,
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: "Erreur lors de l'attribution globale des tuteurs",
+      error,
+    });
+  }
+};
+
 //permet d'envoyer les identifiants de l'élève par mail
 exports.sendPassword = async (req, res) => {
   const eleveId = req.params.id;
@@ -128,6 +160,56 @@ exports.asignParcours = async (req, res) => {
       .json({
         message: "Error lors de l'attribution d'un emploi du temps à un élève'",
       });
+  }
+};
+
+exports.assignParcoursToAllEleves = async (req, res) => {
+  const { nbEleveMax, weekStart } = req.body;
+
+  try {
+    const summary = await EleveService.assignParcoursToAllEleves(
+      nbEleveMax,
+      weekStart
+    );
+    res.status(200).json({
+      message: "Les parcours de la semaine ont ete attribues aux eleves eligibles.",
+      summary,
+    });
+  } catch (error) {
+    const statusCode = error.message.includes("obligatoire") || error.message.includes("strictement positif")
+      ? 400
+      : 500;
+
+    res.status(statusCode).json({
+      message:
+        error.message ||
+        "Erreur lors de l'attribution globale des parcours aux eleves",
+    });
+  }
+};
+
+exports.prepareWeekForEleves = async (req, res) => {
+  const { nbEleveMax, weekStart } = req.body;
+
+  try {
+    const summary = await EleveService.prepareWeekForEleves(
+      nbEleveMax,
+      weekStart
+    );
+    res.status(200).json({
+      message: "La semaine des eleves a ete preparee.",
+      summary,
+    });
+  } catch (error) {
+    const statusCode = error.message.includes("obligatoire") || error.message.includes("strictement positif")
+      ? 400
+      : 500;
+
+    res.status(statusCode).json({
+      message:
+        error.message ||
+        "Erreur lors de la preparation globale de la semaine des eleves",
+    });
   }
 };
 

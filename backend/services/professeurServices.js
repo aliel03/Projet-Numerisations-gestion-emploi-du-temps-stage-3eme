@@ -105,7 +105,15 @@ exports.updateProf = async (profId, profData) => {
   if (!prof) {
     throw new Error("Le professeur que vous souhaitez modifier n'existe pas");
   }
-  await prof.update(profData);
+  const updatedProfData = { ...profData };
+
+  if (!updatedProfData.password) {
+    delete updatedProfData.password;
+  } else {
+    updatedProfData.password = await bcrypt.hash(updatedProfData.password, 10);
+  }
+
+  await prof.update(updatedProfData);
   return prof;
 };
 

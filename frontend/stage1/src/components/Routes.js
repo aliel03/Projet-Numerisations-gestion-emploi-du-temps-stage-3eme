@@ -8,6 +8,8 @@ import Login from "../Pages/Authentification/Login";
 import Eleve from "../Pages/Eleves/Eleve";
 import Eleves from "../Pages/Eleves/Eleves";
 import EleveForm from "../Pages/Eleves/EleveForm";
+import EleveQuestionnaire from "../Pages/Eleves/EleveQuestionnaire";
+import EleveParcoursGroupe from "../Pages/Eleves/EleveParcoursGroupe";
 
 import Professeurs from "../Pages/Professeurs/Professeurs";
 import Professeur from "../Pages/Professeurs/Professeur";
@@ -26,6 +28,7 @@ import Questions from "../Pages/Questions/Questions";
 import ReponsesEleves from "../Pages/Reponses/ReponsesEleves";
 import ReponsesProfesseurs from "../Pages/Reponses/ReponsesProfesseurs";
 import ReponsesForAllEleves from "../Pages/Reponses/ReponsesForAllEleves";
+import SuiviEncadrant from "../Pages/Reponses/SuiviEncadrant";
 
 function Rootes(props) {
   const user = props.user;
@@ -59,6 +62,11 @@ function Rootes(props) {
       <Route
         path="/eleve/:id"
         element={<Eleve nbEleveMax={nbEleveMax} semaine={semaine} />}
+      />
+      <Route path="/eleve/:id/questionnaire" element={<EleveQuestionnaire />} />
+      <Route
+        path="/eleve/:id/parcours-groupe"
+        element={<EleveParcoursGroupe semaine={semaine} />}
       />
 
       <Route
@@ -94,6 +102,7 @@ function Rootes(props) {
         path="/reponses/foreleves/:profId"
         element={<ReponsesForAllEleves />}
       />
+      <Route path="/suivi-encadrant/:profId" element={<SuiviEncadrant />} />
     </Routes>
   );
 }

@@ -3,6 +3,7 @@ import { useCallback, useEffect, useState } from "react";
 import "../../style/Parcours/Parcours.css";
 import PlanningGlobal from "./PlanningGlobal";
 import PlanningParcours from "./PlanningParcours";
+import ParcoursElevesPdf from "../../components/Parcours/ParcoursElevesPdf";
 import {
   buildParcoursLabelMap,
   getParcoursDisplayName,
@@ -11,6 +12,7 @@ import {
   getPlanningWeekStatusLabel,
   getPlanningWeekStatusMessage,
 } from "../../utils/planningWeekStatus";
+import { PDFDownloadLink } from "@react-pdf/renderer";
 
 const formatDateLabel = (date) => {
   return new Intl.DateTimeFormat("fr-FR", {
@@ -38,12 +40,15 @@ const getWeekRangeLabel = (weekStart) => {
 function Parcours(props) {
   const semaine = props.semaine;
   const setSemaine = props.setSemaine;
+  const userRole = localStorage.getItem("userRole");
   const [parcours, setParcours] = useState(null);
   const [planningWeeks, setPlanningWeeks] = useState([]);
   const [vueActive, setVueActive] = useState("globale");
   const [parcoursSelectionne, setParcoursSelectionne] = useState("");
   const [statusActionLoading, setStatusActionLoading] = useState(false);
   const [statusActionError, setStatusActionError] = useState("");
+  const [eleves, setEleves] = useState([]);
+  const [professeurs, setProfesseurs] = useState([]);
 
   const loadPlanningWeeks = useCallback(() => {
     axiosInstance
@@ -101,6 +106,32 @@ function Parcours(props) {
     }
   }, [parcours, parcoursSelectionne]);
 
+  useEffect(() => {
+    if (userRole !== "Admin") {
+      setEleves([]);
+      setProfesseurs([]);
+      return;
+    }
+
+    axiosInstance
+      .get("/eleves")
+      .then((response) => {
+        setEleves(response.data || []);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+
+    axiosInstance
+      .get("/professeurs")
+      .then((response) => {
+        setProfesseurs(response.data || []);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  }, [userRole]);
+
   const parcoursIds = parcours ? Object.keys(parcours) : [];
   const selectedPlanningWeek =
     planningWeeks.find((planningWeek) => planningWeek.weekStart === semaine) ||
@@ -111,6 +142,28 @@ function Parcours(props) {
   const titreSemaine = semaine
     ? `Les parcours pour la semaine ${getWeekRangeLabel(semaine)}`
     : "Les parcours de la semaine";
+  const activitesParcoursSelectionne = parcoursSelectionne
+    ? parcours?.[parcoursSelectionne] || []
+    : [];
+  const professeursMap = professeurs.reduce((map, professeur) => {
+    map[professeur.id] = professeur;
+    return map;
+  }, {});
+  const elevesParcoursSelectionne = eleves
+    .filter((eleve) => String(eleve.parcoursId) === String(parcoursSelectionne))
+    .sort((leftEleve, rightEleve) => {
+      const leftName = `${leftEleve.nom} ${leftEleve.prenom}`;
+      const rightName = `${rightEleve.nom} ${rightEleve.prenom}`;
+      return leftName.localeCompare(rightName);
+    })
+    .map((eleve) => ({
+      ...eleve,
+      tuteur: eleve.professeurId ? professeursMap[eleve.professeurId] || null : null,
+    }));
+  const selectedParcoursLabel = getParcoursDisplayName(
+    parcoursSelectionne,
+    parcoursLabelMap
+  );
 
   const handleUpdateWeekStatus = (nextStatus) => {
     if (!semaine) {
@@ -238,19 +291,44 @@ function Parcours(props) {
       </div>
 
       {vueActive === "parcours" && (
-        <div className="parcours-selection-zone">
-          <label htmlFor="parcours-select">Choisir un parcours :</label>
-          <select
-            id="parcours-select"
-            value={parcoursSelectionne}
-            onChange={(e) => setParcoursSelectionne(e.target.value)}
-          >
-            {parcoursIds.map((parcoursId) => (
-              <option key={parcoursId} value={parcoursId}>
-                {getParcoursDisplayName(parcoursId, parcoursLabelMap)}
-              </option>
-            ))}
-          </select>
+        <div className="parcours-selection-bar">
+          <div className="parcours-selection-zone">
+            <label htmlFor="parcours-select">Choisir un parcours :</label>
+            <select
+              id="parcours-select"
+              value={parcoursSelectionne}
+              onChange={(e) => setParcoursSelectionne(e.target.value)}
+            >
+              {parcoursIds.map((parcoursId) => (
+                <option key={parcoursId} value={parcoursId}>
+                  {getParcoursDisplayName(parcoursId, parcoursLabelMap)}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {userRole === "Admin" && parcoursSelectionne && (
+            <PDFDownloadLink
+              className="btn parcours-download-link"
+              document={
+                <ParcoursElevesPdf
+                  parcoursLabel={selectedParcoursLabel}
+                  semaineLabel={getWeekRangeLabel(semaine)}
+                  eleves={elevesParcoursSelectionne}
+                  activites={activitesParcoursSelectionne}
+                />
+              }
+              fileName={`eleves-${selectedParcoursLabel
+                .replace(/\s+/g, "-")
+                .toLowerCase()}.pdf`}
+            >
+              {({ loading }) =>
+                loading
+                  ? "Preparation du PDF..."
+                  : "Telecharger les eleves du parcours"
+              }
+            </PDFDownloadLink>
+          )}
         </div>
       )}
 

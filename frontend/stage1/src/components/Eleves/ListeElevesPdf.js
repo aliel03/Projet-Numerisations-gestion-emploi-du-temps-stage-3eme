@@ -31,13 +31,17 @@ function ListeEleves(props) {
   const activiteId = props.activiteId;
   const professeur = props.professeur;
   const eleve = props.eleve;
+  const title = props.title;
+  const variant = props.variant || "default";
 
   return (
     <Document>
       <Page size="A4" style={styles.page}>
         <View style={styles.header}>
           <Text>
-            {professeur
+            {title
+              ? title
+              : professeur
               ? "Liste des élèves dont " +
                 professeur.nom +
                 " " +
@@ -57,7 +61,16 @@ function ListeEleves(props) {
           {eleves &&
             eleves.map((eleve) => (
               <View key={eleve.id} style={styles.section}>
-                <EleveDescrPdf id={eleve.id} />
+                {variant === "group-summary" ? (
+                  <>
+                    <Text>
+                      {eleve.nom} {eleve.prenom}
+                    </Text>
+                    <Text>Email : {eleve.email}</Text>
+                  </>
+                ) : (
+                  <EleveDescrPdf id={eleve.id} />
+                )}
               </View>
             ))}
         </View>

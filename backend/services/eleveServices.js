@@ -1,4 +1,5 @@
 const ActiviteParcours = require("../models/ActiviteParcours");
+const Activite = require("../models/Activite");
 const Eleve = require("../models/Eleve");
 const Parcours = require("../models/Parcours");
 const Professeur = require("../models/Professeur");
@@ -10,6 +11,114 @@ const {
 const bcrypt = require("bcrypt");
 const emailTemplates = require("../utilities/emailTemplates");
 const planningWeekServices = require("./planningWeekServices");
+
+const parsePositiveInteger = (value) => {
+  const parsedValue = Number.parseInt(value, 10);
+
+  if (!Number.isInteger(parsedValue) || parsedValue <= 0) {
+    return null;
+  }
+
+  return parsedValue;
+};
+
+const buildTutorAssignmentContext = async () => {
+  const [tuteurs, assignedCounts] = await Promise.all([
+    Professeur.findAll({
+      where: {
+        nb_eleve_tuteur: {
+          [Op.gt]: 0,
+        },
+      },
+      order: [
+        ["nb_eleve_tuteur", "DESC"],
+        ["id", "ASC"],
+      ],
+    }),
+    Eleve.findAll({
+      attributes: [
+        "professeurId",
+        [Eleve.sequelize.fn("COUNT", Eleve.sequelize.col("id")), "assignedCount"],
+      ],
+      where: {
+        professeurId: {
+          [Op.ne]: null,
+        },
+      },
+      group: ["professeurId"],
+      raw: true,
+    }),
+  ]);
+
+  const currentLoads = new Map();
+
+  assignedCounts.forEach((row) => {
+    currentLoads.set(
+      Number.parseInt(row.professeurId, 10),
+      Number.parseInt(row.assignedCount, 10)
+    );
+  });
+
+  return {
+    tuteurs,
+    currentLoads,
+  };
+};
+
+const selectBestTuteur = (assignmentContext) => {
+  const { tuteurs, currentLoads } = assignmentContext;
+
+  return [...tuteurs]
+    .filter((tuteur) => {
+      return (currentLoads.get(tuteur.id) || 0) < tuteur.nb_eleve_tuteur;
+    })
+    .sort((leftTuteur, rightTuteur) => {
+      const leftLoad = currentLoads.get(leftTuteur.id) || 0;
+      const rightLoad = currentLoads.get(rightTuteur.id) || 0;
+
+      if (leftLoad !== rightLoad) {
+        return leftLoad - rightLoad;
+      }
+
+      if (leftTuteur.nb_eleve_tuteur !== rightTuteur.nb_eleve_tuteur) {
+        return rightTuteur.nb_eleve_tuteur - leftTuteur.nb_eleve_tuteur;
+      }
+
+      return leftTuteur.id - rightTuteur.id;
+    })[0];
+};
+
+const getPlanningWeekParcoursIds = async (weekStart) => {
+  const planningWeek = weekStart
+    ? await planningWeekServices.getPlanningWeekByStart(weekStart)
+    : null;
+
+  if (weekStart && !planningWeek) {
+    throw new Error("Aucune semaine de planning trouvee");
+  }
+
+  if (!planningWeek) {
+    return {
+      planningWeek: null,
+      parcoursIds: new Set(),
+    };
+  }
+
+  const parcours = await Parcours.findAll({
+    where: {
+      planningWeekId: planningWeek.id,
+    },
+    attributes: ["id"],
+    raw: true,
+  });
+
+  return {
+    planningWeek,
+    parcoursIds: new Set(
+      parcours.map((item) => Number.parseInt(item.id, 10))
+    ),
+  };
+};
 
 exports.getAllEleves = async () => {
   const eleves = await Eleve.findAll();
@@ -94,6 +203,72 @@ exports.getGroupe = async (eleveId) => {
   return groupe;
 };
 
+exports.getElevesByEncadrant = async (professeurId, weekStart) => {
+  const planningWeek = weekStart
+    ? await planningWeekServices.getPlanningWeekByStart(weekStart)
+    : null;
+
+  if (weekStart && !planningWeek) {
+    return [];
+  }
+
+  const activites = await ActiviteParcours.sequelize.models.activites.findAll({
+    // Use the activity owner to find the students actually seen by this encadrant.
+  });
+  const activitesForEncadrant = await Activite.findAll({
+    where: {
+      professeurId,
+    },
+    attributes: ["id"],
+    raw: true,
+  });
+
+  if (!activitesForEncadrant.length) {
+    return [];
+  }
+
+  const activiteIds = activitesForEncadrant.map((activite) => activite.id);
+
+  const activiteParcours = await ActiviteParcours.findAll({
+    attributes: ["parcoursId"],
+    where: {
+      activiteId: {
+        [Op.in]: activiteIds,
+      },
+    },
+    include: planningWeek
+      ? [
+          {
+            model: Parcours,
+            where: {
+              planningWeekId: planningWeek.id,
+            },
+            attributes: [],
+          },
+        ]
+      : [],
+    raw: true,
+  });
+
+  const uniqueParcoursIds = [
+    ...new Set(
+      activiteParcours.map((item) => Number.parseInt(item.parcoursId, 10))
+    ),
+  ].filter(Number.isInteger);
+
+  if (!uniqueParcoursIds.length) {
+    return [];
+  }
+
+  return await Eleve.findAll({
+    where: {
+      parcoursId: {
+        [Op.in]: uniqueParcoursIds,
+      },
+    },
+  });
+};
+
 //envoi mdp à l'élève pour lui permettre de se connecter
 exports.sendPassword = async (eleveId) => {
   try {
@@ -147,68 +322,43 @@ exports.createEleve = async (eleveData, password) => {
 
 //Fonction pour attribuer un tuteur à un élève
 //au moment ou celui-ci est confirmé par l'admin
-exports.assignTuteur = async (eleve) => {
-  // chercher les professeur qui ont déjà des élèves et retourne le professeurId
-  //ainsi que le nombre d'élèves dont il est déjà tuteur
+exports.assignTuteur = async (eleve, existingContext = null) => {
   try {
-    const counts = await Eleve.findAndCountAll({
-      attributes: ["professeurId"],
-      group: "professeurId",
-    });
-
-    const avaibleProfs = [];
-    const notAvaibleProfs = [];
-
-    //pour tous les professesseur étant déjà tuteur d'au moins un èléve
-    // on regard le nombre d'élèves max qu'ils peuvent avoir
-    // si il est supèrieur au nombre d'élèves dont ils sont déjà tuteur, on le rajoute dans avaibleProfs
-    // sinon on l'ajoute dans notAvaibleProfs
-    for (let i = 0; i < counts.rows.length; i++) {
-      const professeurId = counts.rows[i].professeurId;
-
-      if (professeurId !== null) {
-        const prof = await Professeur.findByPk(professeurId);
-
-        if (prof.dataValues.nb_eleve_tuteur > counts.count[i].count) {
-          avaibleProfs.push(professeurId);
-        } else {
-          notAvaibleProfs.push(professeurId);
-        }
-      }
+    if (!eleve) {
+      return false;
     }
 
-    //on récupère tous les profs (même les encadrants car ils ont 0 comme nb_eleve_tuteur)
-    const allProfs = await Professeur.findAll();
-    for (const item of allProfs) {
-      if (item.nb_eleve_tuteur > 0) {
-        let indicateur = 0;
-        for (const profNot of notAvaibleProfs) {
-          if (profNot === item.id) {
-            indicateur++;
-          }
-        }
-        if (indicateur === 0) {
-          // si le tuteur n'apparait pas au moins une fois dans notAvaibleProfs
-          avaibleProfs.push(item.id); // on le rajoute dans allProfs
-        }
-      }
-    }
-    if (avaibleProfs.length === 0) {
-      return false; // Retourne false si aucun tuteur disponible
+    if (eleve.professeurId) {
+      return true;
     }
 
-    const selectedProfesseur = avaibleProfs[0];
+    const assignmentContext = existingContext || (await buildTutorAssignmentContext());
+    const selectedProfesseur = selectBestTuteur(assignmentContext);
 
-    await eleve.update({ professeurId: selectedProfesseur }); // on modifie l'élève pour lui attribuer un tuteur
+    if (!selectedProfesseur) {
+      return false;
+    }
 
-    return true; // Retourne true si l'attribution du tuteur est réussi
+    await eleve.update({ professeurId: selectedProfesseur.id });
+    assignmentContext.currentLoads.set(
+      selectedProfesseur.id,
+      (assignmentContext.currentLoads.get(selectedProfesseur.id) || 0) + 1
+    );
+
+    return true;
   } catch (error) {
     throw new Error("Error lors de l'attribution du tuteur");
   }
 };
 
 //Assigner un parcours disponible à un élève
-exports.assignParcours = async (eleveId, nb_eleve_max, weekStart) => {
+exports.assignParcours = async (
+  eleveId,
+  nb_eleve_max,
+  weekStart,
+  options = {}
+) => {
+  const shouldMarkManualAdjustment = options.markManualAdjustment ?? true;
   const eleve = await Eleve.findByPk(eleveId);
   const planningWeek = weekStart
     ? await planningWeekServices.getPlanningWeekByStart(weekStart)
@@ -278,11 +428,111 @@ exports.assignParcours = async (eleveId, nb_eleve_max, weekStart) => {
     await this.sendPassword(eleve.id);
   }
 
-  if (weekStart) {
+  if (weekStart && shouldMarkManualAdjustment) {
     await planningWeekServices.markWeekManualAdjustmentByStart(weekStart);
   }
 
   return eleve;
+};
+
+exports.assignTuteurToAllEleves = async () => {
+  const assignmentContext = await buildTutorAssignmentContext();
+  const eleves = await Eleve.findAll({
+    where: {
+      professeurId: null,
+    },
+    order: [
+      ["id", "ASC"],
+    ],
+  });
+
+  let assignedCount = 0;
+  let unavailableCount = 0;
+
+  for (const eleve of eleves) {
+    const assigned = await exports.assignTuteur(eleve, assignmentContext);
+
+    if (assigned) {
+      assignedCount += 1;
+    } else {
+      unavailableCount += 1;
+    }
+  }
+
+  return {
+    totalPending: eleves.length,
+    assignedCount,
+    unavailableCount,
+  };
+};
+
+exports.assignParcoursToAllEleves = async (nbEleveMax, weekStart) => {
+  const normalizedNbEleveMax = parsePositiveInteger(nbEleveMax);
+
+  if (!normalizedNbEleveMax) {
+    throw new Error(
+      "La taille maximale des groupes doit etre un entier strictement positif."
+    );
+  }
+
+  if (!weekStart) {
+    throw new Error("La semaine de planning est obligatoire.");
+  }
+
+  const { parcoursIds } = await getPlanningWeekParcoursIds(weekStart);
+  const eleves = await Eleve.findAll({
+    order: [
+      ["id", "ASC"],
+    ],
+  });
+
+  const elevesToAssign = eleves.filter((eleve) => {
+    return !parcoursIds.has(Number.parseInt(eleve.parcoursId, 10));
+  });
+
+  let assignedCount = 0;
+
+  for (const eleve of elevesToAssign) {
+    await exports.assignParcours(eleve.id, normalizedNbEleveMax, weekStart, {
+      markManualAdjustment: false,
+    });
+    assignedCount += 1;
+  }
+
+  if (assignedCount > 0) {
+    await planningWeekServices.markWeekManualAdjustmentByStart(weekStart);
+  }
+
+  return {
+    totalPending: elevesToAssign.length,
+    assignedCount,
+  };
+};
+
+exports.prepareWeekForEleves = async (nbEleveMax, weekStart) => {
+  const tutorSummary = await exports.assignTuteurToAllEleves();
+  const parcoursSummary = await exports.assignParcoursToAllEleves(
+    nbEleveMax,
+    weekStart
+  );
+  const { parcoursIds } = await getPlanningWeekParcoursIds(weekStart);
+  const eleves = await Eleve.findAll({
+    order: [["id", "ASC"]],
+  });
+
+  const readyCount = eleves.filter((eleve) => {
+    return (
+      Boolean(eleve.professeurId) &&
+      parcoursIds.has(Number.parseInt(eleve.parcoursId, 10))
+    );
+  }).length;
+
+  return {
+    tutorSummary,
+    parcoursSummary,
+    readyCount,
+    totalEleves: eleves.length,
+  };
 };
 
 exports.updateEleve = async (eleveId, eleveData) => {

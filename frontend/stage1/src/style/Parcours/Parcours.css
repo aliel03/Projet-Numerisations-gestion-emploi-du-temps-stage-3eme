@@ -39,6 +39,18 @@
     box-sizing: border-box;
 }
 
+.parcours-download-link {
+    color: #ffffff;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.parcours-download-link:hover {
+    color: #ffffff;
+}
+
 .generation-header {
     text-align: center;
     margin-bottom: 24px;
@@ -118,6 +130,16 @@
 
 .generation-actions .btn {
     margin: 0;
+}
+
+.parcours-selection-bar {
+    max-width: 1240px;
+    margin: 0 auto 18px;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 14px;
+    align-items: flex-end;
 }
 
 .btn.btn-secondary {
@@ -561,6 +583,12 @@ i {
 .planning-card-title {
     font-size: 16px;
     font-weight: 700;
+}
+
+.planning-card-badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
 }
 
 .planning-card-badge {

@@ -1,13 +1,9 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axiosInstance from "../../config/axiosConfig";
-import EleveFichier from "../../components/Eleves/EleveFichier";
 import "../../style/EntryPages.css";
 
 function EleveForm() {
-  const userRole = localStorage.getItem("userRole");
-
-  const [eleve, setEleve] = useState(null);
   const [nom, setNom] = useState("");
   const [prenom, setPrenom] = useState("");
   const [email, setEmail] = useState("");
@@ -35,7 +31,7 @@ function EleveForm() {
 
     axiosInstance
       .post("/eleves", data)
-      .then((response) => {
+      .then(() => {
         setNom("");
         setPrenom("");
         setEmail("");
@@ -44,10 +40,11 @@ function EleveForm() {
         setAdress("");
         setEtablissement("");
         setPassword("");
-
-        setEleve(response.data);
-
-        history("/eleveCreation");
+        history("/", {
+          state: {
+            successMessage: "Inscription enregistree avec succes.",
+          },
+        });
       })
       .catch((error) => {
         console.error(error);
@@ -158,7 +155,6 @@ function EleveForm() {
           </form>
         </div>
       </div>
-      {userRole && userRole === "Admin" && <EleveFichier />}
     </div>
   );
 }

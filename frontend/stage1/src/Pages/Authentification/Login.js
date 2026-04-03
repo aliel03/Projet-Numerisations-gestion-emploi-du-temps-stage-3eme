@@ -9,6 +9,7 @@ function Login() {
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
 
   const navigate = useNavigate();
   const isEleve = personne === "eleves";
@@ -25,6 +26,7 @@ function Login() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    setErrorMessage("");
 
     const data = {
       email: email,
@@ -46,9 +48,12 @@ function Login() {
       })
       .catch((error) => {
         console.error(error);
+        setErrorMessage(
+          error?.response?.data?.message ||
+            "Impossible de se connecter. Verifiez votre email et votre mot de passe."
+        );
       });
 
-    setEmail("");
     setPassword("");
   };
 
@@ -65,6 +70,8 @@ function Login() {
             informations de votre stage.
           </p>
         </div>
+
+        {errorMessage && <p className="entry-message is-error">{errorMessage}</p>}
 
         <div className="entry-card is-form contain-form-auth">
           <form onSubmit={handleSubmit} className="entry-form contain-auth">

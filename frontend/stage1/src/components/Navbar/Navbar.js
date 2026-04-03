@@ -70,31 +70,6 @@ function Navbar(props) {
                   </Link>
                 </li>
                 <li>
-                  <Link className="link" to="/questionForm">
-                    Ajouter une question
-                  </Link>
-                </li>
-                <li>
-                  <Link className="link" to="/questions">
-                    Liste des questions
-                  </Link>
-                </li>
-                <li>
-                  <Link className="link" to="/reponsesEleves">
-                    Réponses élèves
-                  </Link>
-                </li>
-                <li>
-                  <Link className="link" to="/reponses/Encadrant">
-                    Réponses encadrants
-                  </Link>
-                </li>
-                <li>
-                  <Link className="link" to="/reponses/Tuteur">
-                    Réponses tuteurs
-                  </Link>
-                </li>
-                <li>
                   <button className="btn nav-logout-btn" onClick={handleSignOut}>
                     Se deconnecter
                   </button>
@@ -107,23 +82,6 @@ function Navbar(props) {
                     Profil
                   </Link>
                 </li>
-                {user.role !== "Encadrant" && (
-                  <>
-                    <li>
-                      <Link className="link" to={"/eleves"}>
-                        Mes élèves
-                      </Link>
-                    </li>
-                    <li>
-                      <Link
-                        className="link"
-                        to={`/reponses/foreleves/${user.id}`}
-                      >
-                        Évaluation de mes élèves
-                      </Link>
-                    </li>
-                  </>
-                )}
                 {user.role !== "Tuteur" && (
                   <li>
                     <Link className="link" to="/activites">
@@ -143,6 +101,11 @@ function Navbar(props) {
               <li>
                 <Link className="link" to={`/eleve/${user.id}`}>
                   Profil
+                </Link>
+              </li>
+              <li>
+                <Link className="link" to={`/eleve/${user.id}/parcours-groupe`}>
+                  Parcours et groupe
                 </Link>
               </li>
               <li>

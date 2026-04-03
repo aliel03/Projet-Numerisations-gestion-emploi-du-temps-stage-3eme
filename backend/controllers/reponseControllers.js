@@ -104,6 +104,113 @@ exports.getResponsesByEleve = async (req, res) => {
   }
 };
 
+exports.getTuteurEvaluationComment = async (req, res) => {
+  const eleveId = req.params.eleveId;
+  const tuteurId = req.query.tuteurId;
+
+  try {
+    const comment = await ReponseServices.getTuteurEvaluationComment(
+      eleveId,
+      tuteurId
+    );
+    res.status(200).json(comment);
+  } catch (error) {
+    res.status(404).json({
+      message: "Error aucun commentaire tuteur n'a ete trouve",
+      error,
+    });
+  }
+};
+
+exports.getVisibleTuteurEvaluationCommentForEleve = async (req, res) => {
+  const eleveId = req.params.eleveId;
+
+  try {
+    const comment =
+      await ReponseServices.getVisibleTuteurEvaluationCommentForEleve(eleveId);
+    res.status(200).json(comment);
+  } catch (error) {
+    res.status(404).json({
+      message: "Error aucun commentaire tuteur n'a ete trouve pour cet eleve",
+      error,
+    });
+  }
+};
+
+exports.upsertTuteurEvaluationComment = async (req, res) => {
+  const eleveId = req.params.eleveId;
+  const { contenu, tuteurId } = req.body;
+
+  try {
+    const comment = await ReponseServices.upsertTuteurEvaluationComment({
+      eleveId,
+      tuteurId,
+      contenu,
+    });
+    res.status(200).json(comment);
+  } catch (error) {
+    res.status(500).json({
+      message: "Error impossible d'enregistrer l'evaluation du tuteur",
+      error,
+    });
+  }
+};
+
+exports.getEncadrantEvaluationComment = async (req, res) => {
+  const eleveId = req.params.eleveId;
+  const encadrantId = req.query.encadrantId;
+
+  try {
+    const comment = await ReponseServices.getEncadrantEvaluationComment(
+      eleveId,
+      encadrantId
+    );
+    res.status(200).json(comment);
+  } catch (error) {
+    res.status(404).json({
+      message: "Error aucun commentaire encadrant n'a ete trouve",
+      error,
+    });
+  }
+};
+
+exports.getVisibleEncadrantEvaluationCommentForEleve = async (req, res) => {
+  const eleveId = req.params.eleveId;
+
+  try {
+    const comment =
+      await ReponseServices.getVisibleEncadrantEvaluationCommentForEleve(
+        eleveId
+      );
+    res.status(200).json(comment);
+  } catch (error) {
+    res.status(404).json({
+      message:
+        "Error aucun commentaire encadrant n'a ete trouve pour cet eleve",
+      error,
+    });
+  }
+};
+
+exports.upsertEncadrantEvaluationComment = async (req, res) => {
+  const eleveId = req.params.eleveId;
+  const { contenu, encadrantId } = req.body;
+
+  try {
+    const comment = await ReponseServices.upsertEncadrantEvaluationComment({
+      eleveId,
+      encadrantId,
+      contenu,
+    });
+    res.status(200).json(comment);
+  } catch (error) {
+    res.status(500).json({
+      message: "Error impossible d'enregistrer l'evaluation de l'encadrant",
+      error,
+    });
+  }
+};
+
 // permet de savoir si réponses a déjà été formulée en fonction de facteur d'unicité
 // si tuteur répond : ensemble (tuteurId-questionId-eleveConcerneId) doit être unique...
 exports.getUniqueReponse = async (req, res) => {

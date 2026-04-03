@@ -70,6 +70,12 @@ exports.addProfesseur = async (req, res) => {
     nb_eleve_tuteur,
     password,
   } = req.body;
+  if (role === "Admin") {
+    return res.status(403).json({
+      message:
+        "La creation d'un compte admin n'est pas autorisee depuis le formulaire.",
+    });
+  }
   try {
     const profData = {
       nom,
@@ -105,6 +111,12 @@ exports.updateProf = async (req, res) => {
     nb_eleve_tuteur,
     password,
   } = req.body;
+  if (role === "Admin") {
+    return res.status(403).json({
+      message:
+        "Le role admin ne peut pas etre attribue depuis cette interface.",
+    });
+  }
   try {
     const profData = {
       nom,

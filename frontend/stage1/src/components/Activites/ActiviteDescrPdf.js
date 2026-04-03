@@ -62,6 +62,9 @@ function ActiviteDescrPdf(props) {
           <Text>
             Lieu de rendez-vous (là où on doit se rendre): {activite.lieu_rdv}
           </Text>
+          {activite.commentaire_admin && (
+            <Text>Commentaire admin : {activite.commentaire_admin}</Text>
+          )}
           <Text>id : {activite.id}</Text>
           <Text>Encadrant : {professeur && professeur.nom}</Text>
           <Text>

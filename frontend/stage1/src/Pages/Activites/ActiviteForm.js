@@ -1,14 +1,12 @@
 import { useEffect, useMemo, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import axiosInstance from "../../config/axiosConfig";
-import ActiviteFichier from "../../components/Activites/ActiviteFichier";
 import "../../style/Activites/Activites.css";
 
-function ActiviteForm(props) {
-  const userRole = localStorage.getItem("userRole");
-  const semaine = props.semaine;
+function ActiviteForm() {
   const navigate = useNavigate();
   const location = useLocation();
+  const userRole = localStorage.getItem("userRole");
 
   const injectedProfesseurId = Number(location.state?.professeurId || 0);
 
@@ -30,6 +28,7 @@ function ActiviteForm(props) {
 
   const [lieu, setLieu] = useState("");
   const [lieuRdv, setLieuRdv] = useState("");
+  const [commentaireAdmin, setCommentaireAdmin] = useState("");
   const [professeurId, setProfesseurId] = useState(injectedProfesseurId);
 
   const [allProfs, setAllProfs] = useState([]);
@@ -150,6 +149,7 @@ function ActiviteForm(props) {
       v2: Number(v2),
       lieu,
       lieu_rdv: lieuRdv,
+      commentaire_admin: commentaireAdmin,
       professeurId: Number(professeurId),
     };
 
@@ -220,11 +220,11 @@ function ActiviteForm(props) {
         </div>
 
         <div className="activite-dispo-block">
-          <h3 className="activite-dispo-title">
-            Mes disponibilités pour la semaine du {semaine}
-          </h3>
+          <h3 className="activite-dispo-title">Mes disponibilités générales</h3>
           <p className="activite-dispo-subtitle">
-            Cliquez sur les carrés pour indiquer vos créneaux disponibles.
+            Indiquez les créneaux où cette activité peut être proposée. Le
+            planning de la semaine sera construit ensuite à partir de ces
+            disponibilités.
           </p>
 
           <div className="activite-dispo-table-container">
@@ -293,6 +293,17 @@ function ActiviteForm(props) {
           />
         </div>
 
+        {userRole === "Admin" && (
+          <div className="label-form">
+            <label>Commentaire logistique admin</label>
+            <textarea
+              value={commentaireAdmin}
+              onChange={(e) => setCommentaireAdmin(e.target.value)}
+              placeholder="Exemple : carte d'identite obligatoire, rendez-vous devant tel batiment, consigne particuliere..."
+            />
+          </div>
+        )}
+
         {showEncadrantSelect ? (
           <div className="label-form">
             <label>Encadrant :</label>
@@ -327,8 +338,6 @@ function ActiviteForm(props) {
           Valider
         </button>
       </form>
-
-      {userRole === "Admin" && <ActiviteFichier />}
     </div>
   );
 }

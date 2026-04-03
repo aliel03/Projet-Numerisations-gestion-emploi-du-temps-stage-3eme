@@ -32,6 +32,9 @@ function ActiviteDescr(props) {
           <li>
             Lieu de rendez-vous (là ou je dois me rendre): {activite.lieu_rdv}
           </li>
+          {activite.commentaire_admin && (
+            <li>Commentaire admin : {activite.commentaire_admin}</li>
+          )}
           <li>id : {activite.id}</li>
           <li>
             <button>

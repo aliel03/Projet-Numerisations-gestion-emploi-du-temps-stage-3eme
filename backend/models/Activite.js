@@ -73,6 +73,11 @@ const Activite = db.define("activites", {
     type: DataTypes.TEXT,
     allowNull: false,
   },
+  commentaire_admin: {
+    type: DataTypes.TEXT,
+    allowNull: true,
+    defaultValue: "",
+  },
   professeurId: {
     type: DataTypes.INTEGER,
     allowNull: false,

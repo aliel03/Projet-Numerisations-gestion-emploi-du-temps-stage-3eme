@@ -1,13 +1,12 @@
 import { useEffect, useState, useContext } from "react";
 import axiosInstance from "../../config/axiosConfig";
 import ActiviteDescr from "../Activites/ActiviteDescr";
-import ParcoursPdf from "./ParcoursPdf";
-import { PDFDownloadLink } from "@react-pdf/renderer";
 import { MomentsContext } from "../../utils/tabMoments";
 import {
   buildParcoursLabelMap,
   getParcoursDisplayName,
 } from "../../utils/parcoursLabels";
+import { downloadEleveParcoursSpreadsheet } from "../../utils/eleveParcoursSpreadsheet";
 
 function Parc(props) {
   const parcoursId = props.parcoursId;
@@ -19,6 +18,7 @@ function Parc(props) {
 
   const [etat, setEtat] = useState(false);
   const [parcoursLabelMap, setParcoursLabelMap] = useState({});
+  const [tuteur, setTuteur] = useState(null);
 
   const handleAfficherParc = () => {
     setEtat(!etat);
@@ -62,10 +62,37 @@ function Parc(props) {
       });
   }, [prof, semaine]);
 
+  useEffect(() => {
+    if (!eleve?.professeurId) {
+      setTuteur(null);
+      return;
+    }
+
+    axiosInstance
+      .get(`/professeurs/${eleve.professeurId}`)
+      .then((res) => {
+        setTuteur(res.data);
+      })
+      .catch((err) => {
+        console.error(err);
+        setTuteur(null);
+      });
+  }, [eleve]);
+
   const parcoursDisplayName = getParcoursDisplayName(
     parcoursId,
     parcoursLabelMap
   );
+
+  const handleDownloadSpreadsheet = () => {
+    downloadEleveParcoursSpreadsheet({
+      eleve,
+      tuteur,
+      activites,
+      weekStart: semaine,
+      parcoursLabel: parcoursDisplayName,
+    });
+  };
 
   return (
     <div>
@@ -88,24 +115,14 @@ function Parc(props) {
             </li>
           ))}
       </ul>
-      {
-        <PDFDownloadLink
-          className="link pdf"
-          document={<ParcoursPdf activites={activites} eleve={eleve} />}
-          fileName={"parcours" + parcoursId + ".pdf"}
-        >
-          {({ blob, url, loading, error }) =>
-            loading ? (
-              "Téléchargement en cours..."
-            ) : (
-              <>
-                <i className="fa-solid fa-circle-down fa-xl"></i> Télécharger le
-                Parcours
-              </>
-            )
-          }
-        </PDFDownloadLink>
-      }
+      <button
+        className="btn pdf"
+        type="button"
+        onClick={handleDownloadSpreadsheet}
+      >
+        <i className="fa-solid fa-circle-down fa-xl"></i> Telecharger le
+        planning Excel
+      </button>
     </div>
   );
 }

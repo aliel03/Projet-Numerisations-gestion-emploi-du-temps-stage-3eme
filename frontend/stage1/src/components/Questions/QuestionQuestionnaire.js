@@ -7,6 +7,7 @@ import QuestionPdf from "./QuestionPdf";
 
 function QuestionQuestionnaire(props) {
   const questionnaire = props.questionnaire;
+  const title = props.title;
   const repondantProfId = props.repondantProfId;
   const repondantEleveId = props.repondantEleveId;
   const activiteId = props.activiteId;
@@ -40,7 +41,7 @@ function QuestionQuestionnaire(props) {
           ) : (
             <i className="fa-solid fa-play fa-rotate-90 fa-lg"></i>
           )}{" "}
-          Questionnaire pour {questionnaire}
+          {title || `Questionnaire pour ${questionnaire}`}
         </button>
         <ul>
           {etat &&

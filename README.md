@@ -1,88 +1,140 @@
 # Une semaine à l'UM !
 
-Cette application a pour objectif de numériser la gestion stage de 3eme effectué au sein de l'Université de Montepllier.
+Cette application a pour objectif de numeriser la gestion des stages de 3e effectues au sein de l'Universite de Montpellier.
 
-## Les utilisateurs 
+Elle permet de centraliser les informations des eleves, tuteurs, encadrants et administrateurs, ainsi que de faciliter la generation et le suivi des emplois du temps.
 
-Les utilisateurs seront classés selon leur rôle et il y aura au total 4 rôles distincts : 
+## Les utilisateurs
 
-| Rôle | Description                |
-| :-------- |  :------------------------- |
-| Encadrant | Encadre une activité |
-| Tuteur | Tuteur d'un élève, il est responsable de l'élève, reste à disposition de l'élève, répond à ses questions rempli fiche d'évalation finale|
-|Élève| l'élève qui effectuera le stage|
-|Admin|Administrateur permet de générer les emplois du temps, valider les élèves, générer des questions...|
+Les utilisateurs sont classes selon leur role. L'application distingue 4 roles principaux :
 
-> 📝 un utilisateur peut être à la fois encadrant et tuteur
+| Role | Description |
+| :--- | :--- |
+| Encadrant | Encadre une ou plusieurs activites |
+| Tuteur | Suit un ou plusieurs eleves, reste a leur disposition et remplit la fiche d'evaluation finale |
+| Eleve | Effectue son stage de 3e au sein de l'universite |
+| Admin | Gere l'application, les utilisateurs, les questionnaires et la generation des emplois du temps |
 
-## Les fonctionnalités
+> Un utilisateur peut etre a la fois encadrant et tuteur.
 
-Les fonctionnalités sont principalement propre à chaque rôle :
+## Les fonctionnalites
+
+Les fonctionnalites de l'application varient selon le role de l'utilisateur.
 
 ### Encadrant
-- Entrer ses informations personnelles pour s'inscrire
-- Ajouter une actvité qu'il pourra encadrer 
-- Se connecter à son compte
-- Accéder aux activités qu'il encadre 
-- Accéder à son emploi du temps et le télécharger en PDF
-- Accéder à la liste des élèves qu'il aura pour chaque actvité qu'il propose et la télécharger en PDF
-- Répondre au questionnaire pour les encadrants pour chaque activité qu'il propose et modifier ses réponses
+
+- Renseigner ses informations personnelles pour s'inscrire
+- Ajouter une activite qu'il pourra encadrer
+- Se connecter a son compte
+- Acceder aux activites qu'il encadre
+- Acceder a son emploi du temps et le telecharger en PDF
+- Acceder a la liste des eleves associes a ses activites et la telecharger en PDF
+- Repondre au questionnaire encadrant pour chaque activite et modifier ses reponses
 
 ### Tuteur
-- Entrer ses informations personnelles pour s'inscrire
-- Entrer le nombre d'élèves dont il souhaite être Tuteur
-- Accéder aux informations des élèves dont il est Tuteur
-- Accéder à l'emploi du temps de ses élèves 
-- Répondre au questionnaire pour tuteur
+
+- Renseigner ses informations personnelles pour s'inscrire
+- Indiquer le nombre d'eleves qu'il souhaite suivre
+- Acceder aux informations des eleves dont il est tuteur
+- Acceder a l'emploi du temps de ses eleves
+- Repondre au questionnaire tuteur
 
 ### Eleve
-- Entrer ses informations personnelles pour s'inscrire
-- Accèder à ses informations personnelles
-- Accéder à son groupe (les personnes ayant le même emploi du temps)
-- Accéder a son emploi du temps et le générer en PDF
-- Accéder aux infom
-- Accéder aux informations de son tuteur
-- Accéder au questionnaire de satisfaction pour élève
+
+- Renseigner ses informations personnelles pour s'inscrire
+- Acceder a ses informations personnelles
+- Acceder a son groupe (eleves ayant le meme emploi du temps)
+- Acceder a son emploi du temps et le generer en PDF
+- Acceder aux informations utiles concernant son stage
+- Acceder aux informations de son tuteur
+- Repondre au questionnaire de satisfaction eleve
 
 ### Administrateur
 
-- Générer des emplois du temps (Choisi le nombre d'emplois du temps à générer et nombre d'élèves max pour chaque activité)
-- Ajouter des activité à la main ou avec un fichier CSV
-- Ajouter des Encadrants ou des Tuteurs à la main ou avec un fichier CSV
-- Ajouter des élèves à la main ou avec un fichier CSV
-- Afficher tous les emplois du temps élève/Tuteur
-- Accéder à la liste de tous les élèves, de tous les tuteurs/encadrants
-- Supprimer les élèves, les tuteurs, les encadrants
-- Valider un élève (lui attribut un tuteur)
-- Assigner un emploi du temps à un élève
-- Voir les réponses aux questionnaires des élèves, des tuteurs et des encadrants
-- Ajouter des questions à n'importe quel questionnaire
-- Afficher toutes les questions déjà existante, les modifier, les supprimer
+- Generer des emplois du temps en choisissant le nombre de parcours a produire et le nombre maximum d'eleves par activite
+- Ajouter des activites a la main ou via un fichier CSV
+- Ajouter des encadrants ou des tuteurs a la main ou via un fichier CSV
+- Ajouter des eleves a la main ou via un fichier CSV
+- Afficher l'ensemble des emplois du temps eleves et tuteurs
+- Acceder a la liste de tous les eleves, tuteurs et encadrants
+- Supprimer des eleves, des tuteurs et des encadrants
+- Valider un eleve et lui attribuer un tuteur
+- Assigner un emploi du temps a un eleve
+- Consulter les reponses aux questionnaires des eleves, tuteurs et encadrants
+- Ajouter des questions a n'importe quel questionnaire
+- Afficher, modifier et supprimer les questions deja existantes
+
+## Technologies utilisees
+
+- Frontend : React
+- Backend : Node.js / Express
+- Base de donnees : MySQL
+- ORM : Sequelize
+
+## Structure du projet
+
+- `frontend/stage1` : application frontend React
+- `backend` : API REST et logique metier
+- `database/bd.sql` : script SQL de base
+- `backend/Api.md` : documentation de l'API
 
 ## Lancer l'application en local
 
-- Ouvrir un terminal 
+### Prerequis
 
-- Clonner le projet 
-``` git clone https://github.com/Amel2306/Projet-Numerisations-gestion-emploi-du-temps-stage-3eme.git ```
+- Node.js et npm
+- MySQL
 
-- Aller dans le fichier du backend 
-```cd backend```
+### 1. Cloner le projet
 
-- Télécharger les dépendances pour le back
-``` npm install ```
+```bash
+git clone https://github.com/Amel2306/Projet-Numerisations-gestion-emploi-du-temps-stage-3eme.git
+cd Projet-Numerisations-gestion-emploi-du-temps-stage-3eme
+```
 
-- Lancer le serveur 
-``` npm start ```
+### 2. Preparer la base de donnees
 
-- Revenir au répertoir du projet 
-``` cd .. ```
+Creer une base de donnees MySQL, par exemple `projet_stage`, puis importer le script SQL present dans :
 
-- Aller dans le fichier du frontend
-``` cd frontend/stage1 ```
+```bash
+database/bd.sql
+```
 
-- Télécharger les dépendances du front 
-```npm install ```
+Le backend utilise par defaut la connexion suivante si aucune variable d'environnement n'est definie :
 
-- Lancer le frontend
-```npm start ```
+```txt
+mysql://amel:mdp@localhost:3306/projet_stage
+```
+
+Vous pouvez aussi definir la variable d'environnement `DATABASE_URL` pour utiliser une autre configuration.
+
+### 3. Installer et lancer le backend
+
+```bash
+cd backend
+npm install
+node server.js
+```
+
+Le serveur backend demarre par defaut sur le port `4000`.
+
+### 4. Installer et lancer le frontend
+
+Dans un nouveau terminal :
+
+```bash
+cd frontend/stage1
+npm install
+npm start
+```
+
+Le frontend demarre par defaut sur le port `3000`.
+
+## Acces a l'application
+
+- Frontend : `http://localhost:3000`
+- API backend : `http://localhost:4000/api`
+
+## Documentation complementaire
+
+- La documentation des routes API est disponible dans [`backend/Api.md`](backend/Api.md).

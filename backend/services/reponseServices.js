@@ -152,6 +152,113 @@ exports.updateReponse = async (reponseId, newContenu) => {
   return reponse_a_modif;
 };
 
+const getEvaluationQuestion = async (questionnaire = "Tuteur") => {
+  return await QuestionServices.ensureEvaluationQuestion(questionnaire);
+};
+
+exports.getEvaluationComment = async (
+  eleveId,
+  professeurId,
+  questionnaire = "Tuteur"
+) => {
+  const question = await getEvaluationQuestion(questionnaire);
+
+  return await Reponse.findOne({
+    where: {
+      eleveConcerneId: eleveId,
+      repondantProfId: professeurId,
+      questionId: question.id,
+      activiteId: null,
+      indexMoment: null,
+    },
+  });
+};
+
+exports.getVisibleEvaluationCommentForEleve = async (
+  eleveId,
+  questionnaire = "Tuteur"
+) => {
+  const question = await getEvaluationQuestion(questionnaire);
+
+  return await Reponse.findOne({
+    where: {
+      eleveConcerneId: eleveId,
+      questionId: question.id,
+      activiteId: null,
+      indexMoment: null,
+    },
+    order: [["updatedAt", "DESC"]],
+  });
+};
+
+exports.upsertEvaluationComment = async ({
+  eleveId,
+  professeurId,
+  contenu,
+  questionnaire = "Tuteur",
+}) => {
+  const existingComment = await exports.getEvaluationComment(
+    eleveId,
+    professeurId,
+    questionnaire
+  );
+
+  if (existingComment) {
+    await existingComment.update({
+      contenu,
+    });
+
+    return existingComment;
+  }
+
+  const question = await getEvaluationQuestion(questionnaire);
+
+  return await Reponse.create({
+    contenu,
+    repondantProfId: professeurId,
+    eleveConcerneId: eleveId,
+    questionId: question.id,
+    activiteId: null,
+    indexMoment: null,
+  });
+};
+
+exports.getTuteurEvaluationComment = async (eleveId, tuteurId) =>
+  exports.getEvaluationComment(eleveId, tuteurId, "Tuteur");
+
+exports.getVisibleTuteurEvaluationCommentForEleve = async (eleveId) =>
+  exports.getVisibleEvaluationCommentForEleve(eleveId, "Tuteur");
+
+exports.upsertTuteurEvaluationComment = async ({
+  eleveId,
+  tuteurId,
+  contenu,
+}) =>
+  exports.upsertEvaluationComment({
+    eleveId,
+    professeurId: tuteurId,
+    contenu,
+    questionnaire: "Tuteur",
+  });
+
+exports.getEncadrantEvaluationComment = async (eleveId, encadrantId) =>
+  exports.getEvaluationComment(eleveId, encadrantId, "Encadrant");
+
+exports.getVisibleEncadrantEvaluationCommentForEleve = async (eleveId) =>
+  exports.getVisibleEvaluationCommentForEleve(eleveId, "Encadrant");
+
+exports.upsertEncadrantEvaluationComment = async ({
+  eleveId,
+  encadrantId,
+  contenu,
+}) =>
+  exports.upsertEvaluationComment({
+    eleveId,
+    professeurId: encadrantId,
+    contenu,
+    questionnaire: "Encadrant",
+  });
+
 exports.deleteReponse = async (reponseId) => {
   await Reponse.destroy(reponseId);
 };

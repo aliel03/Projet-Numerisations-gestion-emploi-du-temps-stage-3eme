@@ -2,15 +2,19 @@ import { useEffect } from "react";
 import { useState } from "react";
 import { PDFDownloadLink } from "@react-pdf/renderer";
 import axiosInstance from "../../config/axiosConfig";
-import EleveDescr from "./EleveDescr";
 import ListeEleves from "./ListeElevesPdf";
+import {
+  buildParcoursLabelMap,
+  getParcoursDisplayName,
+} from "../../utils/parcoursLabels";
 
 function EleveGroupe(props) {
   const id = props.id;
   const eleveP = props.eleve;
+  const semaine = localStorage.getItem("semaineStage");
 
   const [groupe, setGroupe] = useState(null);
-  const [etat, setEtat] = useState(false);
+  const [parcoursLabelMap, setParcoursLabelMap] = useState({});
 
   useEffect(() => {
     axiosInstance
@@ -23,35 +27,50 @@ function EleveGroupe(props) {
       });
   }, []);
 
-  const handleAfficherGroupe = () => {
-    setEtat(!etat);
-  };
+  useEffect(() => {
+    if (!semaine) {
+      return;
+    }
+
+    axiosInstance
+      .get("/activiteparcours/parcours", {
+        params: {
+          weekStart: semaine,
+        },
+      })
+      .then((res) => {
+        setParcoursLabelMap(buildParcoursLabelMap(Object.keys(res.data || {})));
+      })
+      .catch((err) => {
+        console.error(err);
+      });
+  }, [semaine]);
+
+  const parcoursDisplayName = getParcoursDisplayName(
+    eleveP?.parcoursId,
+    parcoursLabelMap
+  );
+  const groupeDisplayName = parcoursDisplayName.replace("Parcours", "Groupe");
+  const groupeFileName = `${groupeDisplayName
+    .toLowerCase()
+    .replace(/\s+/g, "-")}.pdf`;
 
   return (
     groupe &&
     groupe.length > 0 && (
       <div className="contain-groupe">
-        <div className="ensemble-groupe">
-          <h1 className="groupe">Mon groupe</h1>
-          <button className="btn" onClick={() => handleAfficherGroupe()}>
-            {etat ? (
-              <i className="fa-solid fa-play fa-rotate-270 fa-lg"></i>
-            ) : (
-              <i className="fa-solid fa-play fa-rotate-90 fa-lg"></i>
-            )}{" "}
-            Groupe
-          </button>
-          {groupe &&
-            etat &&
-            groupe.map((eleve) => (
-              <div>
-                <EleveDescr id={eleve.id} />
-              </div>
-            ))}
+        <div className="ensemble-groupe groupe-download-only">
           <PDFDownloadLink
             className="link pdf"
-            document={<ListeEleves eleves={groupe} eleve={eleveP} />}
-            fileName={"groupe" + id + ".pdf"}
+            document={
+              <ListeEleves
+                eleves={groupe}
+                eleve={eleveP}
+                title={`Liste des eleves du ${groupeDisplayName}`}
+                variant="group-summary"
+              />
+            }
+            fileName={groupeFileName}
           >
             {({ blob, url, loading, error }) =>
               loading ? (
@@ -59,7 +78,7 @@ function EleveGroupe(props) {
               ) : (
                 <>
                   <i className="fa-solid fa-circle-down fa-xl"></i> Télécharger
-                  la liste des élèves
+                  le groupe
                 </>
               )
             }

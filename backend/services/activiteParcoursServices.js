@@ -11,7 +11,16 @@ const enrichActiviteParcours = async (activiteParcours) => {
     include: [
       {
         model: Professeur,
-        attributes: ["id", "nom", "prenom", "role"],
+        attributes: [
+          "id",
+          "nom",
+          "prenom",
+          "role",
+          "email",
+          "numero_tel",
+          "metier",
+          "etablissement",
+        ],
       },
     ],
   });
@@ -29,6 +38,7 @@ const enrichActiviteParcours = async (activiteParcours) => {
           nb_eleve_max: activite.nb_eleve_max,
           lieu: activite.lieu,
           lieu_rdv: activite.lieu_rdv,
+          commentaire_admin: activite.commentaire_admin,
           professeurId: activite.professeurId,
           professeur: activite.Professeur
             ? {
@@ -36,6 +46,10 @@ const enrichActiviteParcours = async (activiteParcours) => {
                 nom: activite.Professeur.nom,
                 prenom: activite.Professeur.prenom,
                 role: activite.Professeur.role,
+                email: activite.Professeur.email,
+                numero_tel: activite.Professeur.numero_tel,
+                metier: activite.Professeur.metier,
+                etablissement: activite.Professeur.etablissement,
               }
             : null,
         }
@@ -83,7 +97,6 @@ exports.getActiviteByParcours = async (parcoursId) => {
 };
 
 exports.getActParcByProf = async (profId, weekStart) => {
-  //on commence par chercher les activités dont le prof est tuteur
   const activites = await Activite.findAll({
     where: {
       professeurId: profId,
@@ -104,8 +117,7 @@ exports.getActParcByProf = async (profId, weekStart) => {
   }
 
   for (let i = 0; i < 10; i++) {
-    tab_moments[i] = []; // tableau de moment avec chaque case = {activités avec l'id du moment = i}
-    // pour toutes les activités du prof on les cherche dans ActiviteParcours en fonction de l'index du moment
+    tab_moments[i] = [];
     for (const act of activites) {
       const act_present = await ActiviteParcours.findAll({
         where: {
@@ -125,11 +137,11 @@ exports.getActParcByProf = async (profId, weekStart) => {
           : [],
       });
       if (act_present.length > 0) {
-        // si cette activité et ce moment existe on les retourne
         tab_moments[i].push(act_present);
       }
     }
   }
+
   return tab_moments;
 };
 

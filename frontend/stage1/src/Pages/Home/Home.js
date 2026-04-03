@@ -1,13 +1,19 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import "../../style/EntryPages.css";
 
 function Home(props) {
   const user = props.user;
+  const location = useLocation();
+  const successMessage = location.state?.successMessage;
+
   if (!user) {
     return (
       <div className="entry-page">
         <div className="entry-shell">
+          {successMessage && (
+            <p className="entry-message is-success">{successMessage}</p>
+          )}
           <div className="entry-header">
             <p className="entry-eyebrow">DigiFilles</p>
             <h1 className="entry-title">Choisissez votre espace</h1>

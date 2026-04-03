@@ -13,6 +13,7 @@ const ensureSchemaUpdates = async () => {
     const planningWeekDescription = await queryInterface.describeTable(
       "PlanningWeeks"
     );
+    const activiteDescription = await queryInterface.describeTable("activites");
 
     if (!parcoursDescription.planningWeekId) {
       await queryInterface.addColumn("Parcours", "planningWeekId", {
@@ -40,6 +41,14 @@ const ensureSchemaUpdates = async () => {
         type: DataTypes.BOOLEAN,
         allowNull: false,
         defaultValue: false,
+      });
+    }
+
+    if (!activiteDescription.commentaire_admin) {
+      await queryInterface.addColumn("activites", "commentaire_admin", {
+        type: DataTypes.TEXT,
+        allowNull: true,
+        defaultValue: "",
       });
     }
   } catch (error) {

@@ -5,15 +5,24 @@
     align-items: center;
 }
 
+.professeur-profile-panel {
+    width: min(100%, 1000px);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
 .prof-descr {
-    max-width: 380px;
+    width: 100%;
+    max-width: none;
+    box-sizing: border-box;
     height: auto;
-    text-align: left;
-    padding: 15px;
-    border-radius: 25px;
+    text-align: center;
+    padding: 22px 28px;
+    border-radius: 30px;
     box-shadow: 5px 5px 2px 2px rgb(201, 173, 166, 0.4);
     background: #c9ada7;
-    margin: 20px;
+    margin: 10px;
     list-style: none;
 }
 
@@ -41,21 +50,86 @@
 .parcours-prof {
     display: flex;
     flex-direction: column;
+    box-sizing: border-box;
     box-shadow: 0px 187px 75px rgba(0, 0, 0, 0.01), 0px 105px 63px rgba(0, 0, 0, 0.05), 0px 47px 47px rgba(0, 0, 0, 0.09), 0px 12px 26px rgba(0, 0, 0, 0.1), 0px 0px 0px rgba(0, 0, 0, 0.1);
     background: #D7CCC6;
     border-radius: 30px;
     margin: 10px;
     padding: 10px;
+    width: min(100%, 1000px);
     min-width: 390px;
-    width: auto;
-    max-width: 1000px;
     height: auto;
 }
 
-.contain-activite-prof {
+.parcours-prof-content {
+    width: 100%;
+}
+
+.parcours-prof-header {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.parcours-prof-text {
+    margin: 0;
+    color: #6c584c;
+}
+
+.parcours-prof-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 20px;
+    align-items: start;
+}
+
+.parcours-prof-column {
     display: flex;
-    flex-wrap: wrap;
+    flex-direction: column;
+    height: 100%;
+    padding: 18px;
+    border-radius: 24px;
+    background: rgba(255, 255, 255, 0.5);
+    border: 1px solid rgba(108, 88, 76, 0.12);
+}
+
+.parcours-prof-column-title {
+    margin: 0 0 16px;
+    text-align: center;
+    color: #6c584c;
+}
+
+.parcours-prof-column-list {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+
+.parcours-prof-download {
+    font-weight: 600;
+}
+
+.activite-prof {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.parcours-prof .activite-descr {
+    margin: 0;
+    width: 100%;
+}
+
+.activite-prof-label {
+    margin: 12px 0 0;
+    text-align: center;
+    color: #6c584c;
+    font-weight: 600;
+}
+
+.parcours-prof-footer {
+    display: flex;
     justify-content: center;
+    margin-top: 24px;
 }
 
 
@@ -71,5 +145,15 @@
     
     .parcours-prof {
         min-width: auto;
+    }
+
+    .prof-descr {
+        padding: 20px;
+    }
+}
+
+@media screen and (max-width: 900px) {
+    .parcours-prof-grid {
+        grid-template-columns: 1fr;
     }
 }

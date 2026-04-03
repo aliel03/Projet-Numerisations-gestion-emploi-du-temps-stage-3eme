@@ -60,9 +60,13 @@ function Activtes() {
       <div className="internal-shell">
         <div className="internal-header">
           <p className="internal-eyebrow">Gestion activites</p>
-          <h1 className="internal-title">Liste des activites</h1>
+          <h1 className="internal-title">
+            {userRole === "Admin" ? "Liste des activites" : "Mes activites"}
+          </h1>
           <p className="internal-subtitle">
-            Consultez les activites existantes et ouvrez leur fiche pour gerer les parcours, les eleves et les details.
+            {userRole === "Admin"
+              ? "Consultez les activites existantes et ouvrez leur fiche pour gerer les parcours, les eleves et les details."
+              : "Retrouvez ici vos activites et ouvrez-les pour consulter les eleves presents ainsi que le detail de chaque creneau."}
           </p>
         </div>
 

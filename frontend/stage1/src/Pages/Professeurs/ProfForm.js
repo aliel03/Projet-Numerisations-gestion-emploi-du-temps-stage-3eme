@@ -1,11 +1,9 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axiosInstance from "../../config/axiosConfig";
-import ProfesseurFichier from "../../components/Professeurs/ProfesseurFichier";
 import "../../style/EntryPages.css";
 
 function ProfForm() {
-  const userRole = localStorage.getItem("userRole");
   const navigate = useNavigate();
 
   const [nom, setNom] = useState("");
@@ -19,15 +17,12 @@ function ProfForm() {
   const [password, setPassword] = useState("");
 
   const [errorMessage, setErrorMessage] = useState("");
-  const [successMessage, setSuccessMessage] = useState("");
-
   const isRoleWithActivity =
     role === "Encadrant" || role === "Encadrant et Tuteur";
 
   const handleSubmit = (e) => {
     e.preventDefault();
     setErrorMessage("");
-    setSuccessMessage("");
 
     const data = {
       nom,
@@ -56,7 +51,11 @@ function ProfForm() {
           return;
         }
 
-        setSuccessMessage("Inscription enregistrée avec succès.");
+        navigate("/", {
+          state: {
+            successMessage: "Inscription enregistrée avec succès.",
+          },
+        });
       })
       .catch((error) => {
         console.error("Erreur lors de la création du professeur :", error);
@@ -77,14 +76,11 @@ function ProfForm() {
           <h1 className="entry-title is-mentor">Inscription encadrant</h1>
           <p className="entry-subtitle">
             Creez votre profil pour accompagner des eleves, proposer une
-            activite ou acceder a l&apos;espace administrateur si besoin.
+            activite ou suivre des eleves selon votre role dans l&apos;appli.
           </p>
         </div>
 
         {errorMessage && <p className="entry-message is-error">{errorMessage}</p>}
-        {successMessage && (
-          <p className="entry-message is-success">{successMessage}</p>
-        )}
 
         <div className="entry-card is-form">
           <form onSubmit={handleSubmit} className="entry-form">
@@ -178,13 +174,10 @@ function ProfForm() {
                   <option value="Encadrant et Tuteur">
                     Tuteur et encadrant
                   </option>
-                  {userRole === "Admin" && <option value="Admin">Admin</option>}
                 </select>
               </div>
 
-              {(role === "Tuteur" ||
-                role === "Encadrant et Tuteur" ||
-                role === "Admin") && (
+              {(role === "Tuteur" || role === "Encadrant et Tuteur") && (
                 <div className="label-form full-width">
                   <label>Je souhaite etre tuteur de combien d&apos;eleves ?</label>
                   <input
@@ -208,8 +201,6 @@ function ProfForm() {
           </form>
         </div>
       </div>
-
-      {userRole === "Admin" && <ProfesseurFichier />}
     </div>
   );
 }

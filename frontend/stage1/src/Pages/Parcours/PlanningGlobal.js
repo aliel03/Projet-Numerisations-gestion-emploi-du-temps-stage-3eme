@@ -11,11 +11,67 @@ const jours = [
 function PlanningGlobal(props) {
   const parcours = props.parcours || {};
   const parcoursLabelMap = props.parcoursLabelMap || {};
+  const totalParcours = Object.keys(parcours).length;
+
+  const getSortedParcoursLabels = (parcoursIds) => {
+    return [...parcoursIds]
+      .map((parcoursId) => ({
+        id: String(parcoursId),
+        label: parcoursLabelMap[String(parcoursId)] || `Parcours ${parcoursId}`,
+      }))
+      .sort((leftItem, rightItem) => leftItem.label.localeCompare(rightItem.label))
+      .map((item) => item.label);
+  };
 
   const getItemsForMoment = (indexMoment) => {
-    return Object.values(parcours).flatMap((activites) =>
-      (activites || []).filter((item) => item.indexMoment === indexMoment)
+    const groupedItems = new Map();
+
+    Object.entries(parcours).forEach(([parcoursId, activites]) => {
+      (activites || [])
+        .filter((item) => item.indexMoment === indexMoment)
+        .forEach((item) => {
+          const key = `${item.activiteId}-${item.indexMoment}`;
+          const currentGroup = groupedItems.get(key);
+
+          if (!currentGroup) {
+            groupedItems.set(key, {
+              ...item,
+              parcoursIds: [String(parcoursId)],
+            });
+            return;
+          }
+
+          if (!currentGroup.parcoursIds.includes(String(parcoursId))) {
+            currentGroup.parcoursIds.push(String(parcoursId));
+          }
+        });
+    });
+
+    return [...groupedItems.values()].sort((leftItem, rightItem) => {
+      const leftSize = leftItem.parcoursIds?.length || 0;
+      const rightSize = rightItem.parcoursIds?.length || 0;
+
+      if (leftSize !== rightSize) {
+        return rightSize - leftSize;
+      }
+
+      const leftName = leftItem.activite?.nom || "";
+      const rightName = rightItem.activite?.nom || "";
+
+      return leftName.localeCompare(rightName);
+    });
+  };
+
+  const getParcoursBadgeLabels = (item) => {
+    const groupedParcoursLabels = getSortedParcoursLabels(
+      item.parcoursIds || [item.parcoursId]
     );
+
+    if (groupedParcoursLabels.length === totalParcours && totalParcours > 1) {
+      return ["Tous les parcours", ...groupedParcoursLabels];
+    }
+
+    return groupedParcoursLabels;
   };
 
   return (
@@ -52,6 +108,7 @@ function PlanningGlobal(props) {
                             item={item}
                             showParcours={true}
                             parcoursLabel={parcoursLabelMap[String(item.parcoursId)]}
+                            parcoursLabels={getParcoursBadgeLabels(item)}
                           />
                         ))
                       ) : (
@@ -80,6 +137,7 @@ function PlanningGlobal(props) {
                             item={item}
                             showParcours={true}
                             parcoursLabel={parcoursLabelMap[String(item.parcoursId)]}
+                            parcoursLabels={getParcoursBadgeLabels(item)}
                           />
                         ))
                       ) : (
